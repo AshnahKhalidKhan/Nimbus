@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Teams Pipeline Trigger</title>
+</head>
+<body>
+<h2>Trigger Azure DevOps Pipeline</h2>
+<form id="pipelineForm">
+  <label>Start Time: <input type="datetime-local" name="startTime" required></label><br>
+  <label>End Time: <input type="datetime-local" name="endTime" required></label><br>
+  <label>Task Type:
+    <select name="taskType" required>
+      <option value="Development/Testing">Development/Testing</option>
+      <option value="Load-Testing">Load-Testing</option>
+      <option value="Demo/POC">Demo/POC</option>
+    </select>
+  </label><br>
+  <label>Environment:
+    <select name="environment" required>
+      <option value="Docspire-Test">Docspire-Test</option>
+      <option value="QA">QA</option>
+    </select>
+  </label><br>
+  <label>Notes:<br>
+    <textarea name="notes" rows="4" cols="50"></textarea>
+  </label><br>
+  <label>OAuth Access Token:<input type="text" name="accessToken" required></label><br>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+const form = document.getElementById('pipelineForm');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = Object.fromEntries(new FormData(form));
+  const response = await fetch('http://localhost:3000/api/triggerPipeline', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  });
+  const data = await response.json();
+  alert(JSON.stringify(data, null, 2));
+});
+</script>
+</body>
+</html>
+
+<button id="loginBtn">Sign in with Microsoft</button>
+
+<script>
+document.getElementById('loginBtn').onclick = () => {
+  const clientId = 'YOUR_CLIENT_ID';
+  const redirectUri = 'http://localhost:3000/auth/callback';
+  const scope = '499b84ac-1321-427f-aa17-267ca6975798/.default';
+  const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&response_mode=query&scope=${encodeURIComponent(scope)}`;
+
+  window.open(authUrl, 'OAuthLogin', 'width=600,height=600');
+};
+</script>
