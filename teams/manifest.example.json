@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "1.0.0",
+  "id": "GENERATE-NEW-GUID-FOR-TEAMS-APP-PACKAGE",
+  "packageName": "com.example.nimbus",
+  "developer": {
+    "name": "Your Name",
+    "websiteUrl": "https://example.com",
+    "privacyUrl": "https://example.com/privacy",
+    "termsOfUseUrl": "https://example.com/terms"
+  },
+  "name": {
+    "short": "Nimbus",
+    "full": "Nimbus Task Board"
+  },
+  "description": {
+    "short": "Cloud operations task board",
+    "full": "Trigger pipelines and tasks from a Teams tab."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#5B21B6",
+  "staticTabs": [
+    {
+      "entityId": "nimbusTasks",
+      "name": "Tasks",
+      "contentUrl": "https://YOUR-HTTPS-HOST/",
+      "websiteUrl": "https://YOUR-HTTPS-HOST/",
+      "scopes": ["personal", "team"]
+    }
+  ],
+  "validDomains": ["YOUR-HTTPS-HOST"],
+  "webApplicationInfo": {
+    "id": "YOUR-AZURE-AD-APPLICATION-CLIENT-ID",
+    "resource": "api://YOUR-HTTPS-HOST/YOUR-AZURE-AD-APPLICATION-CLIENT-ID"
+  }
+}

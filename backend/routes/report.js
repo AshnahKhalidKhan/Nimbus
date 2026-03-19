@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../middlewares/requireAuth');
-const pipelineController = require('../controllers/pipelineController');
+const reportController = require('../controllers/reportController');
 
-router.post('/', requireAuth, pipelineController.triggerPipeline);
+router.post('/run', requireAuth, reportController.runReport);
 
 module.exports = router;

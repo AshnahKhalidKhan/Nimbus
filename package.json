@@ -4,6 +4,8 @@
   "description": "_All your cloud needs, simplified._",
   "main": "index.js",
   "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,10 +20,14 @@
   },
   "homepage": "https://github.com/AshnahKhalidKhan/Nimbus#readme",
   "dependencies": {
+    "@azure/msal-node": "^2.16.3",
     "axios": "^1.13.6",
     "body-parser": "^2.2.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "express-session": "^1.18.0",
+    "msal": "^1.4.18"
   }
 }

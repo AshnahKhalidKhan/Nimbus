@@ -1,60 +1,475 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Teams Pipeline Trigger</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nimbus – Task Board</title>
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --card: #fff;
+      --primary: #5b21b6;
+      --primary-hover: #6d28d9;
+      --text: #1f2937;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --success: #059669;
+      --error: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .header h1 { margin: 0; font-size: 1.5rem; color: var(--text); }
+    .user-info { font-size: 0.875rem; color: var(--text-muted); }
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-ghost { background: transparent; color: var(--text-muted); }
+    .btn-ghost:hover { background: var(--border); color: var(--text); }
+    .task-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      max-width: 900px;
+    }
+    .tile {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      cursor: pointer;
+      text-align: center;
+      transition: box-shadow 0.2s, transform 0.1s;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .tile:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-1px);
+    }
+    .tile .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .tile .title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; }
+    .tile .desc { font-size: 0.75rem; color: var(--text-muted); }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 420px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    .modal h2 { margin: 0 0 1rem; font-size: 1.25rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.35rem; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.875rem;
+    }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.25rem; }
+    .message { padding: 0.75rem; border-radius: 6px; margin-top: 1rem; display: none; }
+    .message.show { display: block; }
+    .message.success { background: #d1fae5; color: var(--success); }
+    .message.error { background: #fee2e2; color: var(--error); }
+    .login-prompt {
+      text-align: center;
+      padding: 2rem;
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      max-width: 400px;
+      margin: 2rem auto;
+    }
+    .login-prompt p { color: var(--text-muted); margin-bottom: 1rem; }
+    .origin-warning {
+      display: none;
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      color: #92400e;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      max-width: 900px;
+      font-size: 0.875rem;
+    }
+    .origin-warning a { color: #b45309; font-weight: 600; }
+  </style>
 </head>
 <body>
-<h2>Trigger Azure DevOps Pipeline</h2>
-<form id="pipelineForm">
-  <label>Start Time: <input type="datetime-local" name="startTime" required></label><br>
-  <label>End Time: <input type="datetime-local" name="endTime" required></label><br>
-  <label>Task Type:
-    <select name="taskType" required>
-      <option value="Development/Testing">Development/Testing</option>
-      <option value="Load-Testing">Load-Testing</option>
-      <option value="Demo/POC">Demo/POC</option>
-    </select>
-  </label><br>
-  <label>Environment:
-    <select name="environment" required>
-      <option value="Docspire-Test">Docspire-Test</option>
-      <option value="QA">QA</option>
-    </select>
-  </label><br>
-  <label>Notes:<br>
-    <textarea name="notes" rows="4" cols="50"></textarea>
-  </label><br>
-  <label>OAuth Access Token:<input type="text" name="accessToken" required></label><br>
-  <button type="submit">Submit</button>
-</form>
+  <div id="originWarning" class="origin-warning" role="alert"></div>
+  <div class="header">
+    <h1>Nimbus Task Board</h1>
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span class="user-info" id="userInfo"></span>
+      <button type="button" class="btn btn-ghost" id="logoutBtn" style="display: none;">Sign out</button>
+      <button type="button" class="btn btn-primary" id="loginBtn" style="display: none;">Sign in with Microsoft</button>
+    </div>
+  </div>
 
-<script>
-const form = document.getElementById('pipelineForm');
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const formData = Object.fromEntries(new FormData(form));
-  const response = await fetch('http://localhost:3000/api/triggerPipeline', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(formData)
-  });
-  const data = await response.json();
-  alert(JSON.stringify(data, null, 2));
-});
-</script>
+  <div id="loginPrompt" class="login-prompt" style="display: none;">
+    <p>Sign in with your Microsoft account to use the task board. In Microsoft Teams, sign-in can run automatically when SSO is configured—see <strong>TEAMS_SSO.md</strong> in the project.</p>
+    <button type="button" class="btn btn-primary" id="loginPromptBtn">Sign in with Microsoft</button>
+  </div>
+
+  <div id="taskBoard" class="task-board" style="display: none;">
+    <div class="tile" data-task="pipeline" role="button" tabindex="0">
+      <span class="icon" aria-hidden="true">🚀</span>
+      <span class="title">Trigger Pipeline</span>
+      <span class="desc">Run Azure DevOps pipeline</span>
+    </div>
+    <div class="tile" data-task="report" role="button" tabindex="0">
+      <span class="icon" aria-hidden="true">📊</span>
+      <span class="title">Run Report</span>
+      <span class="desc">Generate a report</span>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" aria-hidden="true">
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">Task</h2>
+      <form id="taskForm">
+        <div id="formFields"></div>
+        <div id="formMessage" class="message"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Teams JavaScript SDK (Tab SSO: getAuthToken). See TEAMS_SSO.md for Entra + manifest setup. -->
+  <script src="https://res.cdn.office.net/teams-js/2.24.0/js/MicrosoftTeams.min.js" crossorigin="anonymous"></script>
+  <script>
+    (function() {
+      const API_BASE = ''; // same origin when served from backend
+      let config = { authLoginUrl: '/auth/login', apiBase: '', baseUrl: '' };
+      let currentTask = null;
+
+      /** If .env BASE_URL is https://ngrok but you opened http://localhost, session cookies won't match — sign-in will look broken. */
+      function checkOriginMismatch() {
+        var el = document.getElementById('originWarning');
+        if (!el || !config.baseUrl) return;
+        try {
+          var expected = new URL(config.baseUrl).origin;
+          if (window.location.origin === expected) {
+            el.style.display = 'none';
+            return;
+          }
+          el.style.display = 'block';
+          el.innerHTML =
+            '<strong>Wrong URL.</strong> Your app is configured for <strong>' + expected + '</strong> ' +
+            '(OAuth / session cookies). You opened <strong>' + window.location.origin + '</strong>. ' +
+            '<a href="' + config.baseUrl + '/">Open Nimbus on the correct URL</a> and sign in there.';
+        } catch (_) {}
+      }
+
+      async function getConfig() {
+        try {
+          const r = await fetch(API_BASE + '/api/config', { credentials: 'include' });
+          if (r.ok) {
+            config = await r.json();
+            checkOriginMismatch();
+          }
+        } catch (_) {}
+      }
+
+      async function checkSession() {
+        try {
+          const r = await fetch(API_BASE + '/auth/session', { credentials: 'include' });
+          const data = await r.json();
+          return data.authenticated;
+        } catch (_) {
+          return false;
+        }
+      }
+
+      function showLogin() {
+        document.getElementById('taskBoard').style.display = 'none';
+        document.getElementById('loginPrompt').style.display = 'block';
+        document.getElementById('userInfo').textContent = '';
+        document.getElementById('loginBtn').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'none';
+        document.getElementById('loginPromptBtn').style.display = 'inline-block';
+      }
+
+      function showBoard(user) {
+        document.getElementById('loginPrompt').style.display = 'none';
+        document.getElementById('taskBoard').style.display = 'grid';
+        document.getElementById('userInfo').textContent = user ? `Signed in as ${user}` : 'Signed in';
+        document.getElementById('loginBtn').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+      }
+
+      /**
+       * Full-page OAuth (same tab). Avoids popup + session cookie issues with ngrok/HTTPS/Chrome.
+       * Server: /auth/login?returnTo=/ then /auth/callback redirects back to / with session set.
+       */
+      function goToMicrosoftLogin() {
+        var base = config.authLoginUrl || (API_BASE + '/auth/login');
+        var sep = base.indexOf('?') >= 0 ? '&' : '?';
+        window.location.href = base + sep + 'returnTo=' + encodeURIComponent('/');
+      }
+
+      async function refreshSession() {
+        await getConfig();
+        try {
+          const r = await fetch(API_BASE + '/auth/session', { credentials: 'include' });
+          const data = await r.json();
+          if (data.authenticated) {
+            showBoard(data.user || null);
+          } else {
+            showLogin();
+          }
+        } catch (_) {
+          showLogin();
+        }
+      }
+
+      /**
+       * Teams Tab SSO: getAuthToken() uses the user already signed into Teams; backend OBO → Azure DevOps.
+       * No popup when Entra "Expose an API" + Teams manifest webApplicationInfo are configured (TEAMS_SSO.md).
+       */
+      async function tryTeamsSso() {
+        if (typeof microsoftTeams === 'undefined') return false;
+        try {
+          await microsoftTeams.app.initialize();
+          var token = await microsoftTeams.authentication.getAuthToken();
+          var r = await fetch(API_BASE + '/auth/teams-sso', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ token: token })
+          });
+          var data = await r.json().catch(function() { return {}; });
+          return r.ok && data.success;
+        } catch (e) {
+          console.warn('Teams SSO not used:', e && e.message ? e.message : e);
+          return false;
+        }
+      }
+
+      async function bootstrap() {
+        await getConfig();
+        try {
+          var sr = await fetch(API_BASE + '/auth/session', { credentials: 'include' });
+          var sd = await sr.json();
+          if (sd.authenticated) {
+            showBoard(sd.user || null);
+            return;
+          }
+        } catch (_) {}
+        if (await tryTeamsSso()) {
+          await refreshSession();
+          return;
+        }
+        await refreshSession();
+      }
+
+      async function logout() {
+        try {
+          await fetch(API_BASE + '/auth/logout', { method: 'POST', credentials: 'include' });
+        } catch (_) {}
+        showLogin();
+      }
+
+      // Task form definitions. Pipeline: optional project/pipelineId override .env default
+      // (ORG=astera, PROJECT=Astera Cloud, PIPELINE_ID=295). Get pipeline IDs from URL:
+      // https://dev.azure.com/astera/Astera%20Cloud/_build?definitionId=295 → 295
+      const taskSchemas = {
+        pipeline: {
+          title: 'Trigger Pipeline',
+          endpoint: '/api/triggerPipeline',
+          method: 'POST',
+          fields: [
+            { name: 'project', label: 'Project (blank = default from .env)', type: 'select', required: false, options: ['', 'Astera Cloud', 'Enterprise'] },
+            { name: 'pipelineId', label: 'Pipeline ID (blank = default 295)', type: 'number', required: false },
+            { name: 'startTime', label: 'Start Time', type: 'datetime-local', required: true },
+            { name: 'endTime', label: 'End Time', type: 'datetime-local', required: true },
+            { name: 'taskType', label: 'Task Type', type: 'select', required: true, options: ['Development/Testing', 'Load-Testing', 'Demo/POC'] },
+            { name: 'environment', label: 'Environment', type: 'select', required: true, options: ['Docspire-Test', 'QA'] },
+            { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+          ]
+        },
+        report: {
+          title: 'Run Report',
+          endpoint: '/api/report/run',
+          method: 'POST',
+          fields: [
+            { name: 'reportType', label: 'Report Type', type: 'select', required: true, options: ['Summary', 'Detailed', 'Export'] },
+            { name: 'startDate', label: 'Start Date', type: 'date', required: true },
+            { name: 'endDate', label: 'End Date', type: 'date', required: true },
+            { name: 'format', label: 'Format', type: 'select', required: true, options: ['PDF', 'Excel', 'CSV'] },
+            { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+          ]
+        }
+      };
+
+      function renderFormFields(schema) {
+        const container = document.getElementById('formFields');
+        container.innerHTML = '';
+        schema.fields.forEach(function(f) {
+          const div = document.createElement('div');
+          div.className = 'form-group';
+          const label = document.createElement('label');
+          label.textContent = f.label + (f.required ? ' *' : '');
+          label.htmlFor = f.name;
+          div.appendChild(label);
+          if (f.type === 'select') {
+            const sel = document.createElement('select');
+            sel.id = sel.name = f.name;
+            if (f.required) sel.required = true;
+            f.options.forEach(function(opt) {
+              const o = document.createElement('option');
+              o.value = opt;
+              o.textContent = opt;
+              sel.appendChild(o);
+            });
+            div.appendChild(sel);
+          } else if (f.type === 'textarea') {
+            const ta = document.createElement('textarea');
+            ta.id = ta.name = f.name;
+            if (f.required) ta.required = true;
+            div.appendChild(ta);
+          } else {
+            const input = document.createElement('input');
+            input.id = input.name = f.name;
+            input.type = f.type || 'text';
+            if (f.required) input.required = true;
+            div.appendChild(input);
+          }
+          container.appendChild(div);
+        });
+      }
+
+      function openModal(taskId) {
+        const schema = taskSchemas[taskId];
+        if (!schema) return;
+        currentTask = taskId;
+        document.getElementById('modalTitle').textContent = schema.title;
+        renderFormFields(schema);
+        document.getElementById('formMessage').classList.remove('show', 'success', 'error');
+        document.getElementById('formMessage').textContent = '';
+        document.getElementById('overlay').classList.add('open');
+        document.getElementById('overlay').setAttribute('aria-hidden', 'false');
+      }
+
+      function closeModal() {
+        document.getElementById('overlay').classList.remove('open');
+        document.getElementById('overlay').setAttribute('aria-hidden', 'true');
+        currentTask = null;
+      }
+
+      function showMessage(msg, isError) {
+        const el = document.getElementById('formMessage');
+        el.textContent = msg;
+        el.classList.add('show', isError ? 'error' : 'success');
+      }
+
+      document.getElementById('taskForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        if (!currentTask) return;
+        const schema = taskSchemas[currentTask];
+        const form = document.getElementById('taskForm');
+        const formData = new FormData(form);
+        const body = {};
+        schema.fields.forEach(function(f) {
+          body[f.name] = formData.get(f.name) || undefined;
+        });
+
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        showMessage('');
+
+        try {
+          const base = (config.apiBase || API_BASE || '').replace(/\/$/, '');
+          const url = base ? base + schema.endpoint : schema.endpoint;
+          const r = await fetch(url, {
+            method: schema.method,
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(body)
+          });
+          const data = await r.json().catch(function() { return {}; });
+
+          if (r.ok && data.success) {
+            showMessage(data.message || 'Done.', false);
+            setTimeout(closeModal, 1500);
+          } else {
+            if (r.status === 401 && data.requiresAuth) {
+              showMessage('Session expired. Please sign in again.', true);
+              setTimeout(function() { closeModal(); showLogin(); }, 2000);
+            } else {
+              showMessage(data.message || 'Request failed.', true);
+            }
+          }
+        } catch (err) {
+          showMessage('Network error. Try again.', true);
+        }
+        submitBtn.disabled = false;
+      });
+
+      document.getElementById('cancelBtn').addEventListener('click', closeModal);
+      document.getElementById('overlay').addEventListener('click', function(e) {
+        if (e.target === document.getElementById('overlay')) closeModal();
+      });
+
+      document.getElementById('loginBtn').addEventListener('click', goToMicrosoftLogin);
+      document.getElementById('loginPromptBtn').addEventListener('click', goToMicrosoftLogin);
+      document.getElementById('logoutBtn').addEventListener('click', logout);
+
+      document.querySelectorAll('.tile').forEach(function(tile) {
+        tile.addEventListener('click', function() { openModal(this.getAttribute('data-task')); });
+        tile.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModal(this.getAttribute('data-task'));
+          }
+        });
+      });
+
+      bootstrap();
+    })();
+  </script>
 </body>
 </html>
-
-<button id="loginBtn">Sign in with Microsoft</button>
-
-<script>
-document.getElementById('loginBtn').onclick = () => {
-  const clientId = 'YOUR_CLIENT_ID';
-  const redirectUri = 'http://localhost:3000/auth/callback';
-  const scope = '499b84ac-1321-427f-aa17-267ca6975798/.default';
-  const authUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&response_mode=query&scope=${encodeURIComponent(scope)}`;
-
-  window.open(authUrl, 'OAuthLogin', 'width=600,height=600');
-};
-</script>
