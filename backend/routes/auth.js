@@ -46,15 +46,11 @@ router.post('/teams-sso', async (req, res) => {
 });
 
 // Redirect user to Microsoft sign-in (URL built in utils/auth.js using CLIENT_ID, TENANT_ID, REDIRECT_URI)
-// Query ?returnTo=/ — after OAuth, /auth/callback redirects here (full-page sign-in; avoids popup cookie issues with ngrok).
+// ?returnTo=/ — where to send the user after OAuth (default: /). Always set so Teams / bookmarks without query still return to the app.
 router.get('/login', async (req, res) => {
   try {
-    const returnTo = safeReturnTo(req.query.returnTo);
-    if (returnTo) {
-      req.session.oauthReturnTo = returnTo;
-    } else {
-      delete req.session.oauthReturnTo;
-    }
+    const returnTo = safeReturnTo(req.query.returnTo) || '/';
+    req.session.oauthReturnTo = returnTo;
     const redirectUri = req.query.redirect_uri || process.env.REDIRECT_URI;
     const url = await getAuthCodeUrl(redirectUri);
     res.redirect(url);
@@ -80,34 +76,10 @@ router.get('/callback', async (req, res) => {
     req.session.account = tokenResult.account || null;
     req.session.authMethod = 'oauth-redirect';
 
-    // Full-page sign-in: same tab returns to the app with session cookie (reliable with ngrok/HTTPS).
-    const returnTo = req.session.oauthReturnTo;
-    if (returnTo) {
-      delete req.session.oauthReturnTo;
-      return res.redirect(302, returnTo);
-    }
-
-    // Popup sign-in (no returnTo): close-window page for legacy / Teams popup flows
-    const closePageHtml = `
-<!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Sign in successful</title></head>
-<body>
-  <p>You're signed in. This window can be closed.</p>
-  <script>
-    try {
-      if (window.opener) {
-        // Use '*' so the parent page receives the message even when it is on a different origin
-        // than this callback (e.g. parent on http://localhost and OAuth on https://ngrok).
-        // For sign-in to work, the parent should be opened on the SAME origin as REDIRECT_URI — see TESTING.md.
-        window.opener.postMessage({ type: 'auth-success' }, '*');
-      }
-    } catch (e) {}
-    setTimeout(function() { window.close(); }, 1500);
-  </script>
-</body>
-</html>`;
-    res.send(closePageHtml);
+    // Always redirect to the app (default /). Teams often omits ?returnTo= or session can reset between login and callback.
+    const returnTo = req.session.oauthReturnTo || '/';
+    delete req.session.oauthReturnTo;
+    return res.redirect(302, returnTo);
   } catch (err) {
     console.error('OAuth callback error:', err.message);
     res.status(500).send(`Sign-in failed: ${err.message}. Please try again.`);

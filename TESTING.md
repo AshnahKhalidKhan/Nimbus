@@ -100,7 +100,7 @@ Repeat **section 5** from the tab. Session cookies must be sent to the **same** 
 
 ## 8. “You’re signed in” in the popup, but the main page still says Sign in
 
-**Current behavior:** Sign-in uses a **full-page redirect** (same tab): Microsoft → `/auth/callback` → **redirect back to `/`** with the session cookie. You should land on the task board signed in—no popup.
+**Current behavior:** Sign-in uses a **full-page redirect**: Microsoft → `/auth/callback` → **302 redirect to `/`** (always, including Microsoft Teams). You should land on the task board signed in.
 
 If you still see issues:
 

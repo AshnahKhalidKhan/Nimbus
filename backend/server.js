@@ -64,18 +64,25 @@ app.use(cookieParser());
 app.use(express.json());
 
 // Session: stores OAuth access token server-side (see routes/auth.js callback).
-// SESSION_SECRET from .env; use a strong random string in production.
+// Teams loads the tab in an embedded WebView; SameSite=Lax cookies are often dropped → user looks "signed out" after OAuth.
+// When BASE_URL is https (ngrok/production), use SameSite=None + Secure (required together) so the session works in Teams.
 const sessionSecret = process.env.SESSION_SECRET || 'change-me-in-production';
+const baseUrlForCookie = (process.env.BASE_URL || '').trim();
+const sessionCookieHttps =
+  /^https:\/\//i.test(baseUrlForCookie) ||
+  process.env.SESSION_COOKIE_SAMESITE_NONE === '1' ||
+  process.env.NODE_ENV === 'production';
 app.use(
   session({
     secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
+    name: 'nimbus.sid',
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: sessionCookieHttps,
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: 'lax',
+      sameSite: sessionCookieHttps ? 'none' : 'lax',
     },
   })
 );
@@ -107,6 +114,9 @@ app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
   const ri = process.env.REDIRECT_URI || '(not set)';
   console.log(`[Nimbus] OAuth REDIRECT_URI loaded: ${ri}`);
+  console.log(
+    `[Nimbus] Session cookie: sameSite=${sessionCookieHttps ? 'none' : 'lax'}, secure=${sessionCookieHttps} (set BASE_URL=https://... for Teams iframe)`
+  );
   if (ri.includes('localhost') && process.env.BASE_URL && !String(process.env.BASE_URL).includes('localhost')) {
     console.warn(
       '[Nimbus] WARNING: REDIRECT_URI uses localhost but BASE_URL does not. If sign-in sends you to localhost, remove REDIRECT_URI from Windows Environment Variables or set REDIRECT_URI in .env to your HTTPS URL (see NGROK_AND_DEPLOY.md).'

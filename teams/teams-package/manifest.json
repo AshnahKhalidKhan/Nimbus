@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "1.0.0",
+  "id": "d7e82f90-4a1c-4b3e-9f2d-8c6e5a4b3c2d",
+  "packageName": "com.astera.nimbus",
+  "developer": {
+    "name": "Astera",
+    "websiteUrl": "https://cloudops.astera.com",
+    "privacyUrl": "https://cloudops.astera.com/privacy",
+    "termsOfUseUrl": "https://cloudops.astera.com/terms"
+  },
+  "name": {
+    "short": "CloudOps",
+    "full": "CloudOps Teams App"
+  },
+  "description": {
+    "short": "CloudOps Teams App",
+    "full": "CloudOps Teams App"
+  },
+  "icons": {
+    "outline": "icon-outline.png",
+    "color": "icon-color.png"
+  },
+  "accentColor": "#5B21B6",
+  "staticTabs": [
+    {
+      "entityId": "cloudopsTasks",
+      "name": "CloudOps",
+      "contentUrl": "https://6c1d-103-244-175-114.ngrok-free.app/",
+      "websiteUrl": "https://6c1d-103-244-175-114.ngrok-free.app/",
+      "scopes": ["personal", "team"]
+    }
+  ],
+  "validDomains": ["6c1d-103-244-175-114.ngrok-free.app"],
+  "webApplicationInfo": {
+    "id": "9abcda82-2fc0-424c-b6b3-d493c5677685",
+    "resource": "api://6c1d-103-244-175-114.ngrok-free.app/9abcda82-2fc0-424c-b6b3-d493c5677685"
+  }
+}

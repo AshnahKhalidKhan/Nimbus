@@ -76,7 +76,7 @@ This app is a **Teams tab–ready task board**: one Microsoft sign-in, then run 
 
 **First-time setup?** See **[SETUP.md](SETUP.md)** for step-by-step configuration. For **Azure AD App Registration from scratch** (every parameter and permission), see **[APP_REGISTRATION.md](APP_REGISTRATION.md)**. For **Teams Tab SSO** (no extra popup when already signed into Teams), see **[TEAMS_SSO.md](TEAMS_SSO.md)** and **`teams/manifest.example.json`**.
 
-**HTTPS for Teams (ngrok now, Cloudflare / astera.com later):** **[NGROK_AND_DEPLOY.md](NGROK_AND_DEPLOY.md)**. **Verify everything works:** **[TESTING.md](TESTING.md)**.
+**HTTPS for Teams (ngrok now, Cloudflare / astera.com later):** **[NGROK_AND_DEPLOY.md](NGROK_AND_DEPLOY.md)**. **Verify everything works:** **[TESTING.md](TESTING.md)**. **Publish in Microsoft Teams (zip, sideload, org catalog):** **[PUBLISH_TEAMS.md](PUBLISH_TEAMS.md)**.
 
 ### Quick start
 

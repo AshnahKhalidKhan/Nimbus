@@ -18,6 +18,12 @@ Official background: [Configure tab app in Microsoft Entra ID](https://learn.mic
 
 ---
 
+## Session cookies in the Teams tab (sign-in loop)
+
+If the app **redirects after login but still shows “Sign in”**, the session cookie was likely blocked. The server uses **`SameSite=None`** + **`Secure`** when **`BASE_URL`** in `.env` starts with `https://` (e.g. ngrok), so cookies work inside the Teams **embedded WebView**. Ensure **`BASE_URL=https://your-host`** (no trailing slash) and restart Node. See startup log: `Session cookie: sameSite=none, secure=true`.
+
+---
+
 ## Local development: is HTTPS required?
 
 **Yes, for testing inside Microsoft Teams.** Teams loads tab content from a **HTTPS** URL. The host in that URL should match what you put in Entra **Application ID URI** (`api://<host>/<CLIENT_ID>`) and in the Teams manifest **`webApplicationInfo.resource`**.
