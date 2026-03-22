@@ -1,192 +1,803 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nimbus – Task Board</title>
+  <title>CloudOps</title>
   <style>
     :root {
-      --bg: #f3f4f6;
-      --card: #fff;
-      --primary: #5b21b6;
-      --primary-hover: #6d28d9;
-      --text: #1f2937;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --success: #059669;
-      --error: #dc2626;
+      --cloud: #f8fcff;
+      --cloud-deep: #eef6ff;
+      --sky-50: #f0f9ff;
+      --sky-100: #e0f2fe;
+      --sky-200: #bae6fd;
+      --sky-300: #7dd3fc;
+      --sky-400: #38bdf8;
+      --sky-500: #0ea5e9;
+      --ocean-600: #0284c7;
+      --text: #0c4a6e;
+      --text-soft: #64748b;
+      --white: #ffffff;
+      --shadow: 0 4px 24px rgba(14, 165, 233, 0.08);
+      --shadow-hover: 0 12px 40px rgba(14, 165, 233, 0.15);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-pill: 999px;
+      --font: 'Segoe UI', 'Segoe UI Variable', system-ui, -apple-system, sans-serif;
     }
+
     * { box-sizing: border-box; }
+    html { font-size: 16px; }
     body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
       margin: 0;
-      padding: 1rem;
-      background: var(--bg);
-      color: var(--text);
       min-height: 100vh;
+      font-family: var(--font);
+      color: var(--text);
+      background: linear-gradient(165deg, var(--cloud) 0%, var(--sky-50) 45%, var(--sky-100) 100%);
+      background-attachment: fixed;
     }
-    .header {
+
+    #originWarning {
+      display: none;
+      margin: 0.75rem 1rem 0;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+      font-size: 0.875rem;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #originWarning a { color: #b45309; font-weight: 600; }
+
+    /* ----- Login (signed out) ----- */
+    .login-shell {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      gap: 0.75rem;
+      justify-content: center;
+      min-height: 85vh;
+      padding: 1.5rem;
     }
-    .header h1 { margin: 0; font-size: 1.5rem; color: var(--text); }
-    .user-info { font-size: 0.875rem; color: var(--text-muted); }
-    .btn {
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-ghost { background: transparent; color: var(--text-muted); }
-    .btn-ghost:hover { background: var(--border); color: var(--text); }
-    .task-board {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 1rem;
-      max-width: 900px;
-    }
-    .tile {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 1.25rem;
-      cursor: pointer;
+    .login-card {
+      max-width: 420px;
+      width: 100%;
+      padding: 2rem;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: var(--shadow);
       text-align: center;
-      transition: box-shadow 0.2s, transform 0.1s;
-      min-height: 120px;
+    }
+    .login-card p { color: var(--text-soft); margin: 0 0 1.25rem; line-height: 1.5; font-size: 0.95rem; }
+
+    /* ----- App shell (signed in) ----- */
+    #appShell { display: none; max-width: 1200px; margin: 0 auto; padding: 1rem 1.25rem 2rem; }
+
+    .app-header {
+      margin-bottom: 1rem;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 1rem;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      min-width: 0;
+      flex: 0 1 auto;
+    }
+    .header-actions {
       display: flex;
       flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 0.65rem;
+      flex-shrink: 0;
+    }
+    .header-user-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      font-size: 0.8125rem;
+      color: var(--text-soft);
+    }
+    .header-nav-tools {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-icon-btn {
+      width: 60px;
+      height: 60px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(186, 230, 253, 0.95);
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.75);
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .nav-icon-btn svg.co-icon {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+    /* Default: multi-tone azure (M365-style). Active: light layers on blue pill. */
+    .nav-icon-btn svg.co-icon .nav-ico-a { fill: url(#co-azure-hero); }
+    .nav-icon-btn svg.co-icon .nav-ico-b { fill: url(#co-azure-mid); }
+    .nav-icon-btn svg.co-icon .nav-ico-c { fill: url(#co-azure-depth); }
+    .nav-icon-btn svg.co-icon .nav-ico-line {
+      fill: none;
+      stroke: url(#co-azure-depth);
+      stroke-width: 1.45;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .nav-icon-btn.active svg.co-icon .nav-ico-a { fill: #f0fdff !important; }
+    .nav-icon-btn.active svg.co-icon .nav-ico-b { fill: rgba(255, 255, 255, 0.82) !important; }
+    .nav-icon-btn.active svg.co-icon .nav-ico-c { fill: rgba(255, 255, 255, 0.48) !important; }
+    .nav-icon-btn.active svg.co-icon .nav-ico-line { stroke: rgba(255, 255, 255, 0.72) !important; }
+    .nav-icon-btn svg.co-icon .nav-ico-wire {
+      fill: none;
+      stroke: url(#co-azure-depth);
+      stroke-width: 0.55;
+      stroke-linecap: round;
+      opacity: 0.55;
+    }
+    .nav-icon-btn.active svg.co-icon .nav-ico-wire { stroke: rgba(255, 255, 255, 0.42) !important; opacity: 1; }
+    .nav-icon-btn svg.co-icon .nav-ico-wire-fine {
+      fill: none;
+      stroke: url(#co-azure-depth);
+      stroke-width: 0.38;
+      stroke-linecap: round;
+      opacity: 0.42;
+    }
+    .nav-icon-btn.active svg.co-icon .nav-ico-wire-fine { stroke: rgba(255, 255, 255, 0.38) !important; opacity: 1; }
+    .nav-icon-btn svg.co-icon .nav-ico-inner { fill: url(#co-azure-soft); opacity: 0.35; }
+    .nav-icon-btn.active svg.co-icon .nav-ico-inner { fill: rgba(255, 255, 255, 0.2) !important; opacity: 1; }
+    /* Operations: cloud + wrench (stroke-based, M365-style gradients) */
+    .nav-icon-btn svg.co-icon .nav-ico-cloud {
+      fill: none;
+      stroke: url(#co-azure-depth);
+      stroke-width: 1.38;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .nav-icon-btn svg.co-icon .nav-ico-wrench {
+      fill: none;
+      stroke: url(#co-azure-hero);
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .nav-icon-btn.active svg.co-icon .nav-ico-cloud { stroke: rgba(255, 255, 255, 0.62) !important; }
+    .nav-icon-btn.active svg.co-icon .nav-ico-wrench { stroke: rgba(255, 255, 255, 0.95) !important; }
+    .nav-icon-btn:hover {
+      background: #fff;
+      box-shadow: var(--shadow);
+      transform: translateY(-1px);
+      color: var(--ocean-600);
+    }
+    .nav-icon-btn:hover:not(.active) svg.co-icon { filter: brightness(1.07) saturate(1.08); }
+    .nav-icon-btn.active {
+      background: linear-gradient(135deg, var(--sky-400), var(--sky-500));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+    }
+    .nav-icon-btn.active:hover {
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .header-search-row {
+      margin-top: 1rem;
+      width: 100%;
+    }
+    @media (max-width: 900px) {
+      .header-top {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .header-brand {
+        justify-content: center;
+        text-align: center;
+      }
+      .header-actions {
+        align-items: center;
+      }
+      .header-user-row {
+        justify-content: center;
+      }
+      .header-nav-tools {
+        justify-content: center;
+      }
+    }
+    .app-logo {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(145deg, var(--sky-200) 0%, var(--sky-500) 45%, var(--ocean-600) 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.28);
+    }
+    .app-logo svg {
+      width: 22px;
+      height: 22px;
+    }
+    .app-logo .logo-cloud-a { fill: rgba(255, 255, 255, 0.92); }
+    .app-logo .logo-cloud-b { fill: rgba(224, 242, 254, 0.95); }
+    .app-logo .logo-cloud-c { fill: rgba(255, 255, 255, 0.38); }
+    .app-name {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--ocean-600);
+    }
+
+    .header-search-wrap {
+      width: calc(100% * 2 / 3);
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .search-input {
+      width: 100%;
+      padding: 0.95rem 1rem 0.95rem 2.75rem;
+      border: 1px solid rgba(186, 230, 253, 0.9);
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.92);
+      font-family: var(--font);
+      font-size: 0.9375rem;
+      color: var(--text);
+      box-shadow: 0 2px 12px rgba(14, 165, 233, 0.06);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-input::placeholder { color: #94a3b8; }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--sky-400);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+    .search-wrap-inner { position: relative; }
+    .search-wrap-inner .search-glyph {
+      position: absolute;
+      left: 0.85rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      pointer-events: none;
+      opacity: 0.88;
+    }
+    .search-wrap-inner .search-glyph .sg-ring { fill: none; stroke: url(#co-azure-hero); stroke-width: 2; stroke-linecap: round; }
+    .search-wrap-inner .search-glyph .sg-handle { fill: none; stroke: url(#co-azure-depth); stroke-width: 2; stroke-linecap: round; opacity: 0.75; }
+
+    .btn-signin {
+      padding: 0.45rem 1rem;
+      border: none;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, var(--sky-500), var(--ocean-600));
+      color: #fff;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(2, 132, 199, 0.3);
+    }
+    .btn-signout {
+      padding: 0.4rem 0.85rem;
+      border: 1px solid var(--sky-200);
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.8);
+      color: var(--text-soft);
+      font-family: var(--font);
+      font-size: 0.8125rem;
+      cursor: pointer;
+    }
+    .btn-signout:hover { background: #fff; }
+
+    /* Panels */
+    .panel { display: none; animation: fadeIn 0.35s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tiles-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    .tiles-row:empty {
+      display: none !important;
+      margin: 0;
+      min-height: 0;
+    }
+    @media (max-width: 900px) {
+      .tiles-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+      .tiles-row { grid-template-columns: 1fr; }
+    }
+
+    .tile {
+      min-height: 140px;
+      padding: 1.35rem 1.1rem;
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.95);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+    .tile:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+    .tile:focus-visible {
+      outline: 2px solid var(--sky-400);
+      outline-offset: 2px;
+    }
+    .tile.hidden-by-search { display: none !important; }
+    .tile-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--ocean-600);
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+    .tile-desc {
+      font-size: 0.8125rem;
+      color: var(--text-soft);
+      line-height: 1.45;
+    }
+    .tile-icon {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+    .tile-icon svg.co-tile-ico {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+    .tile-icon svg.co-tile-ico .ti-a { fill: url(#co-azure-hero); }
+    .tile-icon svg.co-tile-ico .ti-b { fill: url(#co-azure-mid); }
+    .tile-icon svg.co-tile-ico .ti-c { fill: url(#co-azure-depth); }
+    .tile-icon svg.co-tile-ico .ti-d { fill: url(#co-azure-soft); }
+
+    .placeholder-panel {
+      padding: 3rem 1.5rem;
+      text-align: center;
+      background: rgba(255,255,255,0.65);
+      border-radius: var(--radius-lg);
+      border: 1px dashed var(--sky-200);
+      color: var(--text-soft);
+      font-size: 0.95rem;
+    }
+    .placeholder-panel[hidden] {
+      display: none !important;
+    }
+
+    .search-empty-state {
+      display: none;
+      margin: 1.5rem 0 0;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      font-size: 0.95rem;
+      color: var(--text-soft);
+      background: rgba(255,255,255,0.55);
+      border-radius: var(--radius-lg);
+      border: 1px dashed rgba(186, 230, 253, 0.85);
+      min-height: 120px;
       align-items: center;
       justify-content: center;
     }
-    .tile:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      transform: translateY(-1px);
+    .search-empty-state:not([hidden]) {
+      display: flex;
     }
-    .tile .icon { font-size: 2rem; margin-bottom: 0.5rem; }
-    .tile .title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; }
-    .tile .desc { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Modal */
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.4);
-      display: none;
+      background: rgba(12, 74, 110, 0.35);
+      backdrop-filter: blur(4px);
+      display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      z-index: 200;
       padding: 1rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
     }
-    .overlay.open { display: flex; }
+    .overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
     .modal {
-      background: var(--card);
-      border-radius: 12px;
-      padding: 1.5rem;
-      max-width: 420px;
       width: 100%;
+      max-width: 440px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      padding: 1.75rem;
+      background: linear-gradient(180deg, #ffffff 0%, var(--sky-50) 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255,255,255,0.95);
+      box-shadow: 0 24px 48px rgba(8, 47, 73, 0.18);
+      transform: scale(0.96) translateY(8px);
+      transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
     }
-    .modal h2 { margin: 0 0 1rem; font-size: 1.25rem; }
+    .overlay.open .modal {
+      transform: scale(1) translateY(0);
+    }
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .modal-head h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--ocean-600);
+    }
+    .modal-close {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: var(--radius-pill);
+      background: var(--sky-100);
+      color: var(--ocean-600);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .modal-close:hover { background: var(--sky-200); }
+
     .form-group { margin-bottom: 1rem; }
-    .form-group label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.35rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-soft);
+      margin-bottom: 0.35rem;
+    }
     .form-group input, .form-group select, .form-group textarea {
       width: 100%;
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--sky-200);
+      border-radius: var(--radius-md);
+      font-family: var(--font);
       font-size: 0.875rem;
+      background: rgba(255,255,255,0.95);
+      color: var(--text);
     }
-    .form-group textarea { min-height: 80px; resize: vertical; }
-    .modal-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1.25rem; }
-    .message { padding: 0.75rem; border-radius: 6px; margin-top: 1rem; display: none; }
-    .message.show { display: block; }
-    .message.success { background: #d1fae5; color: var(--success); }
-    .message.error { background: #fee2e2; color: var(--error); }
-    .login-prompt {
-      text-align: center;
-      padding: 2rem;
-      background: var(--card);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      max-width: 400px;
-      margin: 2rem auto;
+    .form-group textarea { min-height: 88px; resize: vertical; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: var(--sky-400);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
     }
-    .login-prompt p { color: var(--text-muted); margin-bottom: 1rem; }
-    .origin-warning {
-      display: none;
-      background: #fef3c7;
-      border: 1px solid #f59e0b;
-      color: #92400e;
+
+    .modal-actions {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: flex-end;
+      margin-top: 1.5rem;
+    }
+    .btn-submit {
+      padding: 0.55rem 1.25rem;
+      border: none;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, var(--sky-500), var(--ocean-600));
+      color: #fff;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
+    }
+    .btn-cancel {
+      padding: 0.55rem 1rem;
+      border: 1px solid var(--sky-200);
+      border-radius: var(--radius-pill);
+      background: #fff;
+      color: var(--text-soft);
+      font-family: var(--font);
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .message {
       padding: 0.75rem 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      max-width: 900px;
+      border-radius: var(--radius-md);
+      margin-top: 1rem;
+      display: none;
       font-size: 0.875rem;
     }
-    .origin-warning a { color: #b45309; font-weight: 600; }
+    .message.show { display: block; }
+    .message.success { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .message.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
   </style>
 </head>
 <body>
-  <div id="originWarning" class="origin-warning" role="alert"></div>
-  <div class="header">
-    <h1>Nimbus Task Board</h1>
-    <div style="display: flex; align-items: center; gap: 0.75rem;">
-      <span class="user-info" id="userInfo"></span>
-      <button type="button" class="btn btn-ghost" id="logoutBtn" style="display: none;">Sign out</button>
-      <button type="button" class="btn btn-primary" id="loginBtn" style="display: none;">Sign in with Microsoft</button>
+  <!-- Shared gradients: M365-style azure depth (referenced by SVG fills/strokes) -->
+  <svg class="co-gradients" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;overflow:hidden;clip:rect(0,0,0,0)">
+    <defs>
+      <linearGradient id="co-azure-hero" x1="12%" y1="8%" x2="88%" y2="92%">
+        <stop offset="0%" stop-color="#bae6fd"/>
+        <stop offset="45%" stop-color="#38bdf8"/>
+        <stop offset="100%" stop-color="#0284c7"/>
+      </linearGradient>
+      <linearGradient id="co-azure-mid" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f0f9ff"/>
+        <stop offset="40%" stop-color="#7dd3fc"/>
+        <stop offset="100%" stop-color="#0ea5e9"/>
+      </linearGradient>
+      <linearGradient id="co-azure-depth" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#0c4a6e"/>
+        <stop offset="100%" stop-color="#0369a1"/>
+      </linearGradient>
+      <linearGradient id="co-azure-soft" x1="50%" y1="0%" x2="50%" y2="100%">
+        <stop offset="0%" stop-color="#ffffff"/>
+        <stop offset="100%" stop-color="#e0f2fe"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div id="originWarning" role="alert"></div>
+
+  <div id="loginPrompt" class="login-shell" style="display: none;">
+    <div class="login-card">
+      <div class="app-logo" style="margin: 0 auto 1rem;" aria-hidden="true">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="logo-cloud-c" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" opacity="0.45"/><path class="logo-cloud-b" d="M17.5 9.5c0-2.49-2.01-4.5-4.5-4.5-2.04 0-3.76 1.35-4.32 3.21A4.502 4.502 0 004.5 12.5C4.5 14.99 6.51 17 9 17h8.5a3.5 3.5 0 000-7h-.5z"/><path class="logo-cloud-a" d="M18.5 10.5h.25A3.25 3.25 0 0122 13.75 3.25 3.25 0 0118.75 17H7.25A3.25 3.25 0 014 13.75a3.25 3.25 0 013.08-3.24A5.25 5.25 0 0117.2 7.1a3.45 3.45 0 011.3 3.4z"/></svg>
+      </div>
+      <div class="app-name" style="margin-bottom: 0.5rem;">CloudOps</div>
+      <p>Sign in with your Microsoft account to use CloudOps tools. In Teams, SSO can apply automatically when configured.</p>
+      <button type="button" class="btn-signin" id="loginPromptBtn">Sign in with Microsoft</button>
     </div>
   </div>
 
-  <div id="loginPrompt" class="login-prompt" style="display: none;">
-    <p>Sign in with your Microsoft account to use the task board. In Microsoft Teams, sign-in can run automatically when SSO is configured—see <strong>TEAMS_SSO.md</strong> in the project.</p>
-    <button type="button" class="btn btn-primary" id="loginPromptBtn">Sign in with Microsoft</button>
-  </div>
+  <div id="appShell">
+    <header class="app-header">
+      <div class="header-top">
+        <div class="header-brand">
+          <div class="app-logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path class="logo-cloud-c" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" opacity="0.45"/><path class="logo-cloud-b" d="M17.5 9.5c0-2.49-2.01-4.5-4.5-4.5-2.04 0-3.76 1.35-4.32 3.21A4.502 4.502 0 004.5 12.5C4.5 14.99 6.51 17 9 17h8.5a3.5 3.5 0 000-7h-.5z"/><path class="logo-cloud-a" d="M18.5 10.5h.25A3.25 3.25 0 0122 13.75 3.25 3.25 0 0118.75 17H7.25A3.25 3.25 0 014 13.75a3.25 3.25 0 013.08-3.24A5.25 5.25 0 0117.2 7.1a3.45 3.45 0 011.3 3.4z"/></svg>
+          </div>
+          <span class="app-name">CloudOps</span>
+        </div>
+        <div class="header-actions">
+          <div class="header-user-row">
+            <span id="userInfo"></span>
+            <button type="button" class="btn-signin" id="loginBtn" style="display: none;">Sign in</button>
+            <button type="button" class="btn-signout" id="logoutBtn" style="display: none;">Sign out</button>
+          </div>
+          <nav class="header-nav-tools" aria-label="Tool categories">
+            <button type="button" class="nav-icon-btn nav-tool" data-section="developer" id="navDeveloper" title="Developer tools — build &amp; code" aria-label="Developer tools — build and code">
+              <svg class="co-icon co-icon--dev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                <path class="nav-ico-wire" d="M1 6.5h3M1 4.5v3.5M20.5 9h2.8M22.5 7.5v3"/>
+                <!-- Rear gear (behind window, top-left) -->
+                <g transform="translate(12 12) scale(0.31) translate(-12 -12) translate(-7.8 -6.4)">
+                  <path class="nav-ico-c" d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/>
+                  <circle class="nav-ico-b" cx="12" cy="12" r="3.55"/>
+                </g>
+                <!-- Browser / editor window -->
+                <rect class="nav-ico-b" x="6.25" y="5.75" width="11.5" height="13.5" rx="1.35"/>
+                <rect class="nav-ico-c" x="6.25" y="5.75" width="11.5" height="3.6" rx="1.35"/>
+                <circle class="nav-ico-a" cx="7.45" cy="7.55" r="0.42"/>
+                <circle class="nav-ico-a" cx="8.85" cy="7.55" r="0.42"/>
+                <circle class="nav-ico-a" cx="10.25" cy="7.55" r="0.42"/>
+                <rect class="nav-ico-inner" x="6.65" y="10.35" width="10.7" height="8.55" rx="0.55"/>
+                <path class="nav-ico-wire-fine" d="M7.45 12.15h9.1M7.45 13.55h6.8M7.45 14.95h9.1"/>
+                <!-- Code: </> -->
+                <path class="nav-ico-line" d="M9.2 11.95l-1.25 1.75 1.25 1.75M12.65 11.25l-1 5.1M13.95 11.95l1.25 1.75-1.25 1.75" stroke-width="1.1"/>
+                <!-- Front gear (overlapping corner) -->
+                <g transform="translate(12 12) scale(0.34) translate(-12 -12) translate(9.2 9.4)">
+                  <path class="nav-ico-a" d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/>
+                  <circle class="nav-ico-c" cx="12" cy="12" r="3.55"/>
+                </g>
+              </svg>
+            </button>
+            <button type="button" class="nav-icon-btn nav-tool active" data-section="operations" id="navOperations" title="Operations &amp; DevOps tools" aria-label="Operations and DevOps tools">
+              <svg class="co-icon co-icon--ops" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                <!-- Cloud outline (behind) -->
+                <path class="nav-ico-cloud" transform="translate(0.5 0.75) scale(0.88)" d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/>
+                <!-- Wrench (foreground, tilted over cloud corner) -->
+                <path class="nav-ico-wrench" transform="translate(3.85 3.65) rotate(-39 10.25 9.75)" d="M14.7 6.3a1 1 0 0 0-.4-1.3l-2.2-1.4a1 1 0 0 0-1.3.3l-1.8 2.8-5.8 5.8a2 2 0 0 0 0 2.8l1.4 1.4a2 2 0 0 0 2.8 0l5.8-5.8 2.8-1.8a1 1 0 0 0 .3-1.3l-1.4-2.2z"/>
+              </svg>
+            </button>
+            <button type="button" class="nav-icon-btn nav-tool" data-section="support" id="navSupport" title="Customer &amp; technical support" aria-label="Customer and technical support">
+              <svg class="co-icon co-icon--support" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                <!-- Shirt / shoulders -->
+                <path class="nav-ico-b" d="M5 18.75v-5.8c0-2.65 2.85-4.35 7-4.35s7 1.7 7 4.35v5.8H5z"/>
+                <!-- Head -->
+                <circle class="nav-ico-a" cx="12" cy="7.55" r="3.1"/>
+                <!-- Headset band -->
+                <path class="nav-ico-line" fill="none" d="M8.45 5.85Q12 3.95 15.55 5.85" stroke-width="1.05"/>
+                <!-- Ear cups -->
+                <ellipse class="nav-ico-c" cx="8.85" cy="7.55" rx="0.72" ry="1.08"/>
+                <ellipse class="nav-ico-c" cx="15.15" cy="7.55" rx="0.72" ry="1.08"/>
+                <!-- Boom mic -->
+                <path class="nav-ico-wire-fine" fill="none" d="M15.35 8.4Q17.2 10.2 16.4 12.35" stroke-width="0.55"/>
+                <!-- Tie -->
+                <path class="nav-ico-c" d="M12 10.65l-.95 7.1.95 1.05.95-1.05-.95-7.1z"/>
+                <path class="nav-ico-b" d="M12 10.65l-.35 2.8h.7l-.35-2.8z" opacity="0.88"/>
+                <!-- Small gear (bottom-left) -->
+                <g transform="translate(12 12) scale(0.19) translate(-12 -12) translate(-9.2 7.8)">
+                  <path class="nav-ico-c" d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/>
+                  <circle class="nav-ico-b" cx="12" cy="12" r="3.55"/>
+                </g>
+                <!-- Wrench over gear -->
+                <g transform="translate(3.6 14) scale(0.44)">
+                  <path class="nav-ico-wrench" transform="rotate(-36 10.5 9.25)" d="M14.7 6.3a1 1 0 0 0-.4-1.3l-2.2-1.4a1 1 0 0 0-1.3.3l-1.8 2.8-5.8 5.8a2 2 0 0 0 0 2.8l1.4 1.4a2 2 0 0 0 2.8 0l5.8-5.8 2.8-1.8a1 1 0 0 0 .3-1.3l-1.4-2.2z"/>
+                </g>
+              </svg>
+            </button>
+          </nav>
+        </div>
+      </div>
+      <div class="header-search-row header-search-wrap">
+        <div class="search-wrap-inner">
+          <svg class="search-glyph" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle class="sg-ring" cx="10.25" cy="10.25" r="6.25"/><line class="sg-handle" x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+          <input type="search" class="search-input" id="tileSearch" placeholder="What are you looking for?" autocomplete="off" aria-label="Search tools" />
+        </div>
+      </div>
+    </header>
 
-  <div id="taskBoard" class="task-board" style="display: none;">
-    <div class="tile" data-task="pipeline" role="button" tabindex="0">
-      <span class="icon" aria-hidden="true">🚀</span>
-      <span class="title">Trigger Pipeline</span>
-      <span class="desc">Run Azure DevOps pipeline</span>
-    </div>
-    <div class="tile" data-task="report" role="button" tabindex="0">
-      <span class="icon" aria-hidden="true">📊</span>
-      <span class="title">Run Report</span>
-      <span class="desc">Generate a report</span>
-    </div>
+    <section id="panelOperations" class="panel active" aria-label="Operations tools">
+      <div class="tiles-row" id="opsTiles">
+        <div class="tile" data-task="opsPipeline" role="button" tabindex="0" data-search="pipeline deploy run azure devops">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-d" d="M13.5 22.5h5c.55 0 1 .45 1 1s-.45 1-1 1h-5c-.55 0-1-.45-1-1s.45-1 1-1z"/>
+              <path class="ti-c" d="M11.5 21.5c0-1.1.9-2 2-2h5c1.1 0 2 .9 2 2v1h-9v-1z"/>
+              <path class="ti-b" d="M12.5 11.5h7l1.5 8h-10l1.5-8z"/>
+              <path class="ti-a" d="M16 6.5l2.2 5.2h-4.4L16 6.5z"/>
+              <path class="ti-b" d="M10.5 13.5h-2.2l1.1 3.2 1.1-3.2zm13.2 0h2.2l-1.1 3.2-1.1-3.2z" opacity="0.95"/>
+              <ellipse class="ti-a" cx="16" cy="15" rx="1.8" ry="1.1" opacity="0.85"/>
+            </svg>
+          </span>
+          <span class="tile-title">Release pipeline</span>
+          <span class="tile-desc">Trigger your Azure DevOps pipeline with parameters.</span>
+        </div>
+        <div class="tile" data-task="opsReport" role="button" tabindex="0" data-search="report export summary">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-d" d="M8 6.5h16c1.1 0 2 .9 2 2v17c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2v-17c0-1.1.9-2 2-2z"/>
+              <path class="ti-b" d="M10 9.5h12v2.75H10V9.5z"/>
+              <rect class="ti-c" x="10" y="14" width="3.6" height="10" rx="0.45"/>
+              <rect class="ti-b" x="15.2" y="14" width="3.6" height="13" rx="0.45"/>
+              <rect class="ti-a" x="20.4" y="14" width="3.6" height="7" rx="0.45"/>
+            </svg>
+          </span>
+          <span class="tile-title">Operations report</span>
+          <span class="tile-desc">Generate a scheduled or ad-hoc operations report.</span>
+        </div>
+        <div class="tile" data-task="opsCloudJob" role="button" tabindex="0" data-search="batch job cloud automation">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-c" d="M6.5 18.2c0-4.8 3.9-8.7 8.7-8.7 1.9 0 3.6.6 5 1.6 1.4-1 3.1-1.6 5-1.6 4.8 0 8.7 3.9 8.7 8.7 0 1.2-.25 2.35-.7 3.4H7.2c-.45-1.05-.7-2.2-.7-3.4z"/>
+              <path class="ti-b" d="M8.5 16.5c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5c0 .85-.18 1.65-.45 2.4H9.05c-.27-.75-.45-1.55-.45-2.4z"/>
+              <path class="ti-a" d="M15.2 12.5L13 20.2h3.4l-1.4 6.3 5.6-8.5h-3.8l1.4-5.5z"/>
+            </svg>
+          </span>
+          <span class="tile-title">Cloud batch job</span>
+          <span class="tile-desc">Run a second pipeline or automation definition.</span>
+        </div>
+        <div class="tile" data-task="opsHealthCheck" role="button" tabindex="0" data-search="health check environment validation">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-c" d="M16 4.5l10.4 6v12L16 28.5 5.6 22.5v-12L16 4.5z"/>
+              <path class="ti-b" d="M16 7.2L8.2 11.7v8.6l7.8 4.5 7.8-4.5v-8.6L16 7.2z"/>
+              <path class="ti-a" d="M14.2 18.4l-2.5-2.45 1.05-1.02 1.45 1.42 4.35-4.25 1.05 1.02-5.4 5.28z"/>
+            </svg>
+          </span>
+          <span class="tile-title">Environment check</span>
+          <span class="tile-desc">Validate an environment via pipeline run.</span>
+        </div>
+      </div>
+      <p class="search-empty-state" id="opsSearchEmpty" role="status" aria-live="polite" hidden>No tasks and tools found.</p>
+    </section>
+
+    <section id="panelDeveloper" class="panel" aria-label="Developer tools">
+      <div class="tiles-row" id="devTiles"></div>
+      <p class="search-empty-state" id="devSearchEmpty" role="status" aria-live="polite" hidden>No tasks and tools found.</p>
+      <div class="placeholder-panel" id="devPlaceholder">
+        Developer tools will appear here — repos, builds, and API shortcuts. Same layout as Operations when you add tasks.
+      </div>
+    </section>
+
+    <section id="panelSupport" class="panel" aria-label="Technical support tools">
+      <div class="tiles-row" id="supportTiles"></div>
+      <p class="search-empty-state" id="supportSearchEmpty" role="status" aria-live="polite" hidden>No tasks and tools found.</p>
+      <div class="placeholder-panel" id="supportPlaceholder">
+        Technical support tools will appear here — tickets, runbooks, and quick links.
+      </div>
+    </section>
   </div>
 
   <div id="overlay" class="overlay" aria-hidden="true">
     <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h2 id="modalTitle">Task</h2>
+      <div class="modal-head">
+        <h2 id="modalTitle">Task</h2>
+        <button type="button" class="modal-close" id="modalCloseBtn" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block"><path fill="none" stroke="url(#co-azure-depth)" stroke-width="2.2" stroke-linecap="round" d="M7 7l10 10M17 7L7 17"/></svg>
+        </button>
+      </div>
       <form id="taskForm">
         <div id="formFields"></div>
         <div id="formMessage" class="message"></div>
         <div class="modal-actions">
-          <button type="button" class="btn btn-ghost" id="cancelBtn">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+          <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn-submit" id="submitBtn">Run</button>
         </div>
-      </form>
+</form>
     </div>
   </div>
 
-  <!-- Teams JavaScript SDK (Tab SSO: getAuthToken). See TEAMS_SSO.md for Entra + manifest setup. -->
   <script src="https://res.cdn.office.net/teams-js/2.24.0/js/MicrosoftTeams.min.js" crossorigin="anonymous"></script>
-  <script>
+<script>
     (function() {
-      const API_BASE = ''; // same origin when served from backend
+      const API_BASE = '';
       let config = { authLoginUrl: '/auth/login', apiBase: '', baseUrl: '' };
       let currentTask = null;
+      let currentSection = 'operations';
 
-      /** If .env BASE_URL is https://ngrok but you opened http://localhost, session cookies won't match — sign-in will look broken. */
+      const pipelineFields = [
+        { name: 'project', label: 'Project (optional)', type: 'select', required: false, options: ['', 'Astera Cloud', 'Enterprise'] },
+        { name: 'pipelineId', label: 'Pipeline ID (optional)', type: 'number', required: false },
+        { name: 'startTime', label: 'Start time', type: 'datetime-local', required: true },
+        { name: 'endTime', label: 'End time', type: 'datetime-local', required: true },
+        { name: 'taskType', label: 'Task type', type: 'select', required: true, options: ['Development/Testing', 'Load-Testing', 'Demo/POC'] },
+        { name: 'environment', label: 'Environment', type: 'select', required: true, options: ['Docspire-Test', 'QA'] },
+        { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+      ];
+
+      const taskSchemas = {
+        opsPipeline: { title: 'Release pipeline', endpoint: '/api/triggerPipeline', method: 'POST', fields: pipelineFields },
+        opsCloudJob: { title: 'Cloud batch job', endpoint: '/api/triggerPipeline', method: 'POST', fields: pipelineFields },
+        opsHealthCheck: { title: 'Environment check', endpoint: '/api/triggerPipeline', method: 'POST', fields: pipelineFields },
+        opsReport: {
+          title: 'Operations report',
+          endpoint: '/api/report/run',
+          method: 'POST',
+          fields: [
+            { name: 'reportType', label: 'Report type', type: 'select', required: true, options: ['Summary', 'Detailed', 'Export'] },
+            { name: 'startDate', label: 'Start date', type: 'date', required: true },
+            { name: 'endDate', label: 'End date', type: 'date', required: true },
+            { name: 'format', label: 'Format', type: 'select', required: true, options: ['PDF', 'Excel', 'CSV'] },
+            { name: 'notes', label: 'Notes', type: 'textarea', required: false }
+          ]
+        }
+      };
+
       function checkOriginMismatch() {
         var el = document.getElementById('originWarning');
         if (!el || !config.baseUrl) return;
@@ -198,9 +809,7 @@
           }
           el.style.display = 'block';
           el.innerHTML =
-            '<strong>Wrong URL.</strong> Your app is configured for <strong>' + expected + '</strong> ' +
-            '(OAuth / session cookies). You opened <strong>' + window.location.origin + '</strong>. ' +
-            '<a href="' + config.baseUrl + '/">Open Nimbus on the correct URL</a> and sign in there.';
+            '<strong>Wrong URL.</strong> Open the app at <a href="' + config.baseUrl + '/">' + expected + '</a> for sign-in to work.';
         } catch (_) {}
       }
 
@@ -214,37 +823,22 @@
         } catch (_) {}
       }
 
-      async function checkSession() {
-        try {
-          const r = await fetch(API_BASE + '/auth/session', { credentials: 'include' });
-          const data = await r.json();
-          return data.authenticated;
-        } catch (_) {
-          return false;
-        }
-      }
-
       function showLogin() {
-        document.getElementById('taskBoard').style.display = 'none';
-        document.getElementById('loginPrompt').style.display = 'block';
+        document.getElementById('appShell').style.display = 'none';
+        document.getElementById('loginPrompt').style.display = 'flex';
         document.getElementById('userInfo').textContent = '';
         document.getElementById('loginBtn').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'none';
-        document.getElementById('loginPromptBtn').style.display = 'inline-block';
       }
 
       function showBoard(user) {
         document.getElementById('loginPrompt').style.display = 'none';
-        document.getElementById('taskBoard').style.display = 'grid';
-        document.getElementById('userInfo').textContent = user ? `Signed in as ${user}` : 'Signed in';
+        document.getElementById('appShell').style.display = 'block';
+        document.getElementById('userInfo').textContent = user ? user : '';
         document.getElementById('loginBtn').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'inline-block';
       }
 
-      /**
-       * Full-page OAuth (same tab). Avoids popup + session cookie issues with ngrok/HTTPS/Chrome.
-       * Server: /auth/login?returnTo=/ then /auth/callback redirects back to / with session set.
-       */
       function goToMicrosoftLogin() {
         var base = config.authLoginUrl || (API_BASE + '/auth/login');
         var sep = base.indexOf('?') >= 0 ? '&' : '?';
@@ -256,35 +850,27 @@
         try {
           const r = await fetch(API_BASE + '/auth/session', { credentials: 'include' });
           const data = await r.json();
-          if (data.authenticated) {
-            showBoard(data.user || null);
-          } else {
-            showLogin();
-          }
+          if (data.authenticated) showBoard(data.user || null);
+          else showLogin();
         } catch (_) {
           showLogin();
         }
       }
 
-      /**
-       * Teams Tab SSO: getAuthToken() uses the user already signed into Teams; backend OBO → Azure DevOps.
-       * No popup when Entra "Expose an API" + Teams manifest webApplicationInfo are configured (TEAMS_SSO.md).
-       */
       async function tryTeamsSso() {
         if (typeof microsoftTeams === 'undefined') return false;
         try {
           await microsoftTeams.app.initialize();
           var token = await microsoftTeams.authentication.getAuthToken();
           var r = await fetch(API_BASE + '/auth/teams-sso', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({ token: token })
           });
           var data = await r.json().catch(function() { return {}; });
           return r.ok && data.success;
         } catch (e) {
-          console.warn('Teams SSO not used:', e && e.message ? e.message : e);
           return false;
         }
       }
@@ -313,37 +899,89 @@
         showLogin();
       }
 
-      // Task form definitions. Pipeline: optional project/pipelineId override .env default
-      // (ORG=astera, PROJECT=Astera Cloud, PIPELINE_ID=295). Get pipeline IDs from URL:
-      // https://dev.azure.com/astera/Astera%20Cloud/_build?definitionId=295 → 295
-      const taskSchemas = {
-        pipeline: {
-          title: 'Trigger Pipeline',
-          endpoint: '/api/triggerPipeline',
-          method: 'POST',
-          fields: [
-            { name: 'project', label: 'Project (blank = default from .env)', type: 'select', required: false, options: ['', 'Astera Cloud', 'Enterprise'] },
-            { name: 'pipelineId', label: 'Pipeline ID (blank = default 295)', type: 'number', required: false },
-            { name: 'startTime', label: 'Start Time', type: 'datetime-local', required: true },
-            { name: 'endTime', label: 'End Time', type: 'datetime-local', required: true },
-            { name: 'taskType', label: 'Task Type', type: 'select', required: true, options: ['Development/Testing', 'Load-Testing', 'Demo/POC'] },
-            { name: 'environment', label: 'Environment', type: 'select', required: true, options: ['Docspire-Test', 'QA'] },
-            { name: 'notes', label: 'Notes', type: 'textarea', required: false }
-          ]
-        },
-        report: {
-          title: 'Run Report',
-          endpoint: '/api/report/run',
-          method: 'POST',
-          fields: [
-            { name: 'reportType', label: 'Report Type', type: 'select', required: true, options: ['Summary', 'Detailed', 'Export'] },
-            { name: 'startDate', label: 'Start Date', type: 'date', required: true },
-            { name: 'endDate', label: 'End Date', type: 'date', required: true },
-            { name: 'format', label: 'Format', type: 'select', required: true, options: ['PDF', 'Excel', 'CSV'] },
-            { name: 'notes', label: 'Notes', type: 'textarea', required: false }
-          ]
+      function setSection(section) {
+        currentSection = section;
+        document.querySelectorAll('.nav-tool').forEach(function(b) {
+          b.classList.toggle('active', b.getAttribute('data-section') === section);
+        });
+        document.getElementById('panelOperations').classList.toggle('active', section === 'operations');
+        document.getElementById('panelDeveloper').classList.toggle('active', section === 'developer');
+        document.getElementById('panelSupport').classList.toggle('active', section === 'support');
+        document.getElementById('tileSearch').placeholder =
+          section === 'operations' ? 'What are you looking for?' :
+          section === 'developer' ? 'Search developer tools…' : 'Search support tools…';
+        applyTileSearch();
+      }
+
+      document.querySelectorAll('.nav-tool').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          setSection(btn.getAttribute('data-section'));
+        });
+      });
+
+      /** Normalize text for matching (lowercase, collapse whitespace). */
+      function normalizeForSearch(s) {
+        return (s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+      }
+
+      /**
+       * Match if every whitespace-separated token appears in title, description, or data-search
+       * (substring match, case-insensitive). Example: "azure report" matches when both
+       * "azure" and "report" appear somewhere in the combined text.
+       */
+      function tileMatchesQuery(tile, queryRaw) {
+        var q = normalizeForSearch(queryRaw);
+        if (!q) return true;
+        var titleEl = tile.querySelector('.tile-title');
+        var descEl = tile.querySelector('.tile-desc');
+        var extra = tile.getAttribute('data-search') || '';
+        var hay = normalizeForSearch(
+          (titleEl ? titleEl.textContent : '') + ' ' +
+          (descEl ? descEl.textContent : '') + ' ' + extra
+        );
+        var tokens = q.split(/\s+/).filter(Boolean);
+        if (tokens.length === 0) return true;
+        return tokens.every(function(t) {
+          return hay.indexOf(t) !== -1;
+        });
+      }
+
+      function applyTileSearch() {
+        var qRaw = document.getElementById('tileSearch').value || '';
+        var q = qRaw.trim();
+        var activePanel = document.querySelector('.panel.active');
+        if (!activePanel) return;
+        var tilesRow = activePanel.querySelector('.tiles-row');
+        var tiles = tilesRow ? tilesRow.querySelectorAll('.tile') : [];
+        var emptyEl = activePanel.querySelector('.search-empty-state');
+        var placeholder = activePanel.querySelector('.placeholder-panel');
+
+        if (tiles.length === 0) {
+          if (q.length > 0) {
+            if (placeholder) placeholder.hidden = true;
+            if (emptyEl) emptyEl.hidden = false;
+          } else {
+            if (placeholder) placeholder.hidden = false;
+            if (emptyEl) emptyEl.hidden = true;
+          }
+          return;
         }
-      };
+
+        if (placeholder) placeholder.hidden = true;
+
+        var anyVisible = false;
+        tiles.forEach(function(tile) {
+          var hide = q.length > 0 && !tileMatchesQuery(tile, qRaw);
+          tile.classList.toggle('hidden-by-search', hide);
+          if (!hide) anyVisible = true;
+        });
+
+        if (emptyEl) {
+          emptyEl.hidden = q.length === 0 || anyVisible;
+        }
+      }
+
+      document.getElementById('tileSearch').addEventListener('input', applyTileSearch);
 
       function renderFormFields(schema) {
         const container = document.getElementById('formFields');
@@ -362,7 +1000,7 @@
             f.options.forEach(function(opt) {
               const o = document.createElement('option');
               o.value = opt;
-              o.textContent = opt;
+              o.textContent = opt || '(default)';
               sel.appendChild(o);
             });
             div.appendChild(sel);
@@ -392,6 +1030,9 @@
         document.getElementById('formMessage').textContent = '';
         document.getElementById('overlay').classList.add('open');
         document.getElementById('overlay').setAttribute('aria-hidden', 'false');
+        requestAnimationFrame(function() {
+          document.getElementById('modalCloseBtn').focus();
+        });
       }
 
       function closeModal() {
@@ -410,17 +1051,14 @@
         e.preventDefault();
         if (!currentTask) return;
         const schema = taskSchemas[currentTask];
-        const form = document.getElementById('taskForm');
-        const formData = new FormData(form);
+        const formData = new FormData(document.getElementById('taskForm'));
         const body = {};
         schema.fields.forEach(function(f) {
           body[f.name] = formData.get(f.name) || undefined;
         });
-
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
-        showMessage('');
-
+        document.getElementById('formMessage').classList.remove('show', 'success', 'error');
         try {
           const base = (config.apiBase || API_BASE || '').replace(/\/$/, '');
           const url = base ? base + schema.endpoint : schema.endpoint;
@@ -431,7 +1069,6 @@
             body: JSON.stringify(body)
           });
           const data = await r.json().catch(function() { return {}; });
-
           if (r.ok && data.success) {
             showMessage(data.message || 'Done.', false);
             setTimeout(closeModal, 1500);
@@ -450,6 +1087,7 @@
       });
 
       document.getElementById('cancelBtn').addEventListener('click', closeModal);
+      document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
       document.getElementById('overlay').addEventListener('click', function(e) {
         if (e.target === document.getElementById('overlay')) closeModal();
       });
@@ -458,18 +1096,22 @@
       document.getElementById('loginPromptBtn').addEventListener('click', goToMicrosoftLogin);
       document.getElementById('logoutBtn').addEventListener('click', logout);
 
-      document.querySelectorAll('.tile').forEach(function(tile) {
-        tile.addEventListener('click', function() { openModal(this.getAttribute('data-task')); });
-        tile.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            openModal(this.getAttribute('data-task'));
-          }
-        });
+      document.getElementById('opsTiles').addEventListener('click', function(e) {
+        var tile = e.target.closest('.tile');
+        if (tile) openModal(tile.getAttribute('data-task'));
+      });
+      document.getElementById('opsTiles').addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        var tile = e.target.closest('.tile');
+        if (tile) {
+          e.preventDefault();
+          openModal(tile.getAttribute('data-task'));
+        }
       });
 
+      setSection('operations');
       bootstrap();
     })();
-  </script>
+</script>
 </body>
 </html>
