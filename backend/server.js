@@ -31,6 +31,7 @@ const session = require('express-session');
 const authRoute = require('./routes/auth');
 const triggerPipelineRoute = require('./routes/triggerPipeline');
 const reportRoute = require('./routes/report');
+const endpointHealthRoute = require('./routes/endpointHealth');
 const { errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -103,6 +104,7 @@ app.get('/api/config', (req, res) => {
 // Task API routes (protected by requireAuth)
 app.use('/api/triggerPipeline', triggerPipelineRoute);
 app.use('/api/report', reportRoute);
+app.use('/api/endpointHealth', endpointHealthRoute);
 
 // Serve frontend (task board) so the app is same-origin and session cookies work
 app.use(express.static(path.join(__dirname, '..', 'frontend')));

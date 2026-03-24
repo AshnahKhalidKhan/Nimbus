@@ -333,6 +333,260 @@
       .tiles-row { grid-template-columns: 1fr; }
     }
 
+    /* Operations: endpoint availability — vertical columns with headings (matches HEALTH_CHECK_URLS column order) */
+    .ops-endpoint-panel {
+      margin-bottom: 1rem;
+      padding: 0.6rem 0.65rem 0.65rem;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .ops-endpoint-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      column-gap: 0.5rem;
+      margin-bottom: 0.45rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .ops-endpoint-head-main {
+      grid-column: 2;
+      justify-self: center;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+    .ops-endpoint-title {
+      margin: 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ocean-600);
+    }
+    .ops-endpoint-toggle {
+      flex-shrink: 0;
+      margin: 0;
+      padding: 0;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ocean-600);
+      cursor: pointer;
+      border: 1px solid rgba(224, 242, 254, 0.95);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .ops-endpoint-toggle:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 1);
+      border-color: rgba(125, 211, 252, 0.85);
+      box-shadow: 0 2px 6px rgba(14, 116, 144, 0.12);
+    }
+    .ops-endpoint-toggle:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+    .ops-endpoint-toggle:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+    }
+    .ops-endpoint-toggle:focus-visible {
+      outline: 2px solid var(--ocean-500);
+      outline-offset: 2px;
+    }
+    .ops-endpoint-toggle-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 0;
+      transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    /* Chevron points down when collapsed; rotate 180° when expanded (summary: “hide details”) */
+    .ops-endpoint-toggle[aria-expanded="true"] .ops-endpoint-toggle-icon {
+      transform: rotate(180deg);
+    }
+    .ops-endpoint-toggle svg {
+      display: block;
+    }
+    .ops-endpoint-updated {
+      grid-column: 3;
+      justify-self: end;
+      align-self: start;
+      font-size: 0.6875rem;
+      color: var(--text-soft);
+      text-align: right;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .ops-endpoint-mismatch {
+      margin: 0 0 0.5rem 0;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.75rem;
+      line-height: 1.35;
+      text-align: center;
+      color: #9a3412;
+      background: rgba(254, 243, 199, 0.85);
+      border: 1px solid rgba(251, 191, 36, 0.65);
+      border-radius: 8px;
+    }
+    .ops-endpoint-list-wrap {
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 0;
+      padding: 0 0 0.25rem;
+      text-align: left;
+    }
+    .ops-endpoint-collapsed {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 0 0.15rem;
+    }
+    .ops-endpoint-collapsed-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 0.45rem;
+      row-gap: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .ops-endpoint-summary-cell {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      min-width: 0;
+      padding: 0.4rem 0.45rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(224, 242, 254, 0.9);
+    }
+    .ops-endpoint-summary-cell--full {
+      grid-column: 1 / -1;
+    }
+    .ops-endpoint-summary-name {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--ocean-600);
+      text-align: center;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+    /* Two rows × four equal columns (8 groups total). Sections are direct grid children — no row wrappers (Teams/WebView can mishandle display:contents). */
+    .ops-endpoint-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 0.45rem;
+      row-gap: 0.65rem;
+      width: 100%;
+      box-sizing: border-box;
+      align-items: stretch;
+    }
+    .ops-endpoint-col--overflow {
+      grid-column: 1 / -1;
+    }
+    .ops-endpoint-col {
+      min-width: 0;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+    }
+    .ops-endpoint-col-heading {
+      margin: 0 0 0.2rem 0;
+      padding: 0 0.15rem;
+      font-size: 0.625rem;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--ocean-600);
+      text-align: center;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      hyphens: auto;
+    }
+    .ops-endpoint-col-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    @media (min-width: 1200px) {
+      .ops-endpoint-list-wrap { overflow-x: visible; }
+    }
+    .ops-endpoint-row {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      padding: 0.2rem 0.35rem;
+      min-width: 0;
+      min-height: 0;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid rgba(224, 242, 254, 0.9);
+    }
+    .ops-endpoint-hostname {
+      font-size: 0.625rem;
+      font-weight: 500;
+      line-height: 1.2;
+      color: var(--text);
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: left;
+    }
+    .ops-status-bubble {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid var(--sky-300);
+      background: rgba(255, 255, 255, 0.9);
+    }
+    .ops-status-bubble--ok {
+      border-color: #22c55e;
+      color: #16a34a;
+    }
+    .ops-status-bubble--fail {
+      border-color: #f87171;
+      color: #dc2626;
+    }
+    .ops-status-bubble--pending {
+      border-color: var(--sky-300);
+      color: var(--text-soft);
+      animation: ops-pulse 1.1s ease-in-out infinite;
+    }
+    @keyframes ops-pulse {
+      50% { opacity: 0.65; }
+    }
+    .ops-status-bubble svg {
+      display: block;
+    }
+    .ops-endpoint-empty {
+      margin: 0.35rem 0 0;
+      font-size: 0.8125rem;
+      color: var(--text-soft);
+      line-height: 1.45;
+    }
+
     .tile {
       min-height: 140px;
       padding: 1.35rem 1.1rem;
@@ -378,6 +632,12 @@
     .tile-icon svg.co-tile-ico {
       width: 40px;
       height: 40px;
+      flex-shrink: 0;
+    }
+    .tile-icon .tile-icon-img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
       flex-shrink: 0;
     }
     .tile-icon svg.co-tile-ico .ti-a { fill: url(#co-azure-hero); }
@@ -503,6 +763,46 @@
       outline: none;
       border-color: var(--sky-400);
       box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    /* Wide modal for Jira “external open” flow (no iframe — Atlassian blocks embeds). */
+    .modal.modal--iframe {
+      max-width: min(520px, 96vw);
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      padding: 1.25rem 1.5rem 1.5rem;
+    }
+    .modal-iframe-block {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+    .modal-external-panel {
+      padding: 0.15rem 0 0.25rem;
+    }
+    .modal-external-lead {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: var(--text-soft);
+    }
+    .modal-external-btn {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.65rem 1rem;
+    }
+    .modal-iframe-external {
+      margin: 0.85rem 0 0;
+      font-size: 0.8125rem;
+    }
+    .modal-iframe-external a {
+      color: var(--ocean-600);
+      font-weight: 600;
+    }
+    .modal-iframe-external a:hover {
+      text-decoration: underline;
     }
 
     .modal-actions {
@@ -672,6 +972,39 @@
     </header>
 
     <section id="panelOperations" class="panel active" aria-label="Operations tools">
+      <div class="ops-endpoint-panel" id="opsEndpointPanel" hidden>
+        <div class="ops-endpoint-head">
+          <div class="ops-endpoint-head-main">
+            <h2 class="ops-endpoint-title" id="opsEndpointHeading">Endpoint Availability</h2>
+            <button
+              type="button"
+              class="ops-endpoint-toggle"
+              id="opsEndpointToggle"
+              aria-expanded="true"
+              aria-controls="opsEndpointDetails"
+              title="Show summary only"
+              aria-label="Show summary only"
+            >
+              <span class="ops-endpoint-toggle-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </span>
+            </button>
+          </div>
+          <span class="ops-endpoint-updated" id="opsEndpointUpdated" aria-live="polite"></span>
+        </div>
+        <div id="opsEndpointDetails">
+          <p class="ops-endpoint-mismatch" id="opsEndpointMismatch" hidden role="status"></p>
+          <div class="ops-endpoint-list-wrap" id="opsEndpointExpandedWrap">
+            <div class="ops-endpoint-list" id="opsEndpointList" aria-label="Endpoint availability by environment"></div>
+          </div>
+          <div class="ops-endpoint-collapsed" id="opsEndpointCollapsed" hidden></div>
+          <p class="ops-endpoint-empty" id="opsEndpointEmpty" hidden>
+            No health check URLs configured. Add <code>HEALTH_CHECK_URLS</code> to the server environment (comma or newline separated HTTPS URLs).
+          </p>
+        </div>
+      </div>
       <div class="tiles-row" id="opsTiles">
         <div class="tile" data-task="opsPipeline" role="button" tabindex="0" data-search="pipeline deploy run azure devops">
           <span class="tile-icon" aria-hidden="true">
@@ -722,6 +1055,90 @@
           <span class="tile-title">Environment check</span>
           <span class="tile-desc">Validate an environment via pipeline run.</span>
         </div>
+        <div class="tile" data-task="opsAcDbInit" role="button" tabindex="0" data-search="database sql postgresql initialization upgrade reset astera cloud">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-d" d="M13.5 22.5h5c.55 0 1 .45 1 1s-.45 1-1 1h-5c-.55 0-1-.45-1-1s.45-1 1-1z"/>
+              <path class="ti-c" d="M11.5 21.5c0-1.1.9-2 2-2h5c1.1 0 2 .9 2 2v1h-9v-1z"/>
+              <path class="ti-b" d="M12.5 11.5h7l1.5 8h-10l1.5-8z"/>
+              <path class="ti-a" d="M16 6.5l2.2 5.2h-4.4L16 6.5z"/>
+              <path class="ti-b" d="M10.5 13.5h-2.2l1.1 3.2 1.1-3.2zm13.2 0h2.2l-1.1 3.2-1.1-3.2z" opacity="0.95"/>
+              <ellipse class="ti-a" cx="16" cy="15" rx="1.8" ry="1.1" opacity="0.85"/>
+            </svg>
+          </span>
+          <span class="tile-title">Astera Cloud Database Initialization</span>
+          <span class="tile-desc">Build or upgrade SQL &amp; PostgreSQL databases; repo init, upgrade, and reset for cloud and on-premises.</span>
+        </div>
+        <div class="tile" data-task="opsAcTenantReset" role="button" tabindex="0" data-search="tenant reset qa testing sprint">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-d" d="M13.5 22.5h5c.55 0 1 .45 1 1s-.45 1-1 1h-5c-.55 0-1-.45-1-1s.45-1 1-1z"/>
+              <path class="ti-c" d="M11.5 21.5c0-1.1.9-2 2-2h5c1.1 0 2 .9 2 2v1h-9v-1z"/>
+              <path class="ti-b" d="M12.5 11.5h7l1.5 8h-10l1.5-8z"/>
+              <path class="ti-a" d="M16 6.5l2.2 5.2h-4.4L16 6.5z"/>
+              <path class="ti-b" d="M10.5 13.5h-2.2l1.1 3.2 1.1-3.2zm13.2 0h2.2l-1.1 3.2-1.1-3.2z" opacity="0.95"/>
+              <ellipse class="ti-a" cx="16" cy="15" rx="1.8" ry="1.1" opacity="0.85"/>
+            </svg>
+          </span>
+          <span class="tile-title">Astera Cloud Tenant Reset</span>
+          <span class="tile-desc">Tenant reset workflows for testing and QA sprints (on-premises and cloud).</span>
+        </div>
+        <div class="tile" data-task="opsAcCertRenewal" role="button" tabindex="0" data-search="certificate renewal secrets ssl tls automation">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-d" d="M13.5 22.5h5c.55 0 1 .45 1 1s-.45 1-1 1h-5c-.55 0-1-.45-1-1s.45-1 1-1z"/>
+              <path class="ti-c" d="M11.5 21.5c0-1.1.9-2 2-2h5c1.1 0 2 .9 2 2v1h-9v-1z"/>
+              <path class="ti-b" d="M12.5 11.5h7l1.5 8h-10l1.5-8z"/>
+              <path class="ti-a" d="M16 6.5l2.2 5.2h-4.4L16 6.5z"/>
+              <path class="ti-b" d="M10.5 13.5h-2.2l1.1 3.2 1.1-3.2zm13.2 0h2.2l-1.1 3.2-1.1-3.2z" opacity="0.95"/>
+              <ellipse class="ti-a" cx="16" cy="15" rx="1.8" ry="1.1" opacity="0.85"/>
+            </svg>
+          </span>
+          <span class="tile-title">Astera Cloud Certificate Renewal</span>
+          <span class="tile-desc">Copy, check, and renew secrets and certificates across on-premises and cloud infrastructure.</span>
+        </div>
+        <div class="tile" data-task="opsAcAzureCosts" role="button" tabindex="0" data-search="azure cost analysis spend anomaly rca report">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-d" d="M13.5 22.5h5c.55 0 1 .45 1 1s-.45 1-1 1h-5c-.55 0-1-.45-1-1s.45-1 1-1z"/>
+              <path class="ti-c" d="M11.5 21.5c0-1.1.9-2 2-2h5c1.1 0 2 .9 2 2v1h-9v-1z"/>
+              <path class="ti-b" d="M12.5 11.5h7l1.5 8h-10l1.5-8z"/>
+              <path class="ti-a" d="M16 6.5l2.2 5.2h-4.4L16 6.5z"/>
+              <path class="ti-b" d="M10.5 13.5h-2.2l1.1 3.2 1.1-3.2zm13.2 0h2.2l-1.1 3.2-1.1-3.2z" opacity="0.95"/>
+              <ellipse class="ti-a" cx="16" cy="15" rx="1.8" ry="1.1" opacity="0.85"/>
+            </svg>
+          </span>
+          <span class="tile-title">Astera Cloud Azure Costs Analysis</span>
+          <span class="tile-desc">Cost analysis, reporting, anomaly detection, and RCA for cloud spend monitoring.</span>
+        </div>
+        <div class="tile" data-task="opsAcPodLogs" role="button" tabindex="0" data-search="pod logs kubernetes cluster troubleshooting endpoint">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-d" d="M13.5 22.5h5c.55 0 1 .45 1 1s-.45 1-1 1h-5c-.55 0-1-.45-1-1s.45-1 1-1z"/>
+              <path class="ti-c" d="M11.5 21.5c0-1.1.9-2 2-2h5c1.1 0 2 .9 2 2v1h-9v-1z"/>
+              <path class="ti-b" d="M12.5 11.5h7l1.5 8h-10l1.5-8z"/>
+              <path class="ti-a" d="M16 6.5l2.2 5.2h-4.4L16 6.5z"/>
+              <path class="ti-b" d="M10.5 13.5h-2.2l1.1 3.2 1.1-3.2zm13.2 0h2.2l-1.1 3.2-1.1-3.2z" opacity="0.95"/>
+              <ellipse class="ti-a" cx="16" cy="15" rx="1.8" ry="1.1" opacity="0.85"/>
+            </svg>
+          </span>
+          <span class="tile-title">Astera Cloud Pod Logs</span>
+          <span class="tile-desc">Pod log collection, environment checks, endpoint validation, and troubleshooting reports.</span>
+        </div>
+        <div class="tile" data-task="opsAcUsageRequests" role="button" tabindex="0" data-search="usage cluster startup shutdown monitor pods activity">
+          <span class="tile-icon" aria-hidden="true">
+            <svg class="co-tile-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true">
+              <path class="ti-d" d="M13.5 22.5h5c.55 0 1 .45 1 1s-.45 1-1 1h-5c-.55 0-1-.45-1-1s.45-1 1-1z"/>
+              <path class="ti-c" d="M11.5 21.5c0-1.1.9-2 2-2h5c1.1 0 2 .9 2 2v1h-9v-1z"/>
+              <path class="ti-b" d="M12.5 11.5h7l1.5 8h-10l1.5-8z"/>
+              <path class="ti-a" d="M16 6.5l2.2 5.2h-4.4L16 6.5z"/>
+              <path class="ti-b" d="M10.5 13.5h-2.2l1.1 3.2 1.1-3.2zm13.2 0h2.2l-1.1 3.2-1.1-3.2z" opacity="0.95"/>
+              <ellipse class="ti-a" cx="16" cy="15" rx="1.8" ry="1.1" opacity="0.85"/>
+            </svg>
+          </span>
+          <span class="tile-title">Astera Cloud Usage Requests</span>
+          <span class="tile-desc">Cluster startup/shutdown, usage-based requests, monitoring, and post-activity reporting.</span>
+        </div>
       </div>
       <p class="search-empty-state" id="opsSearchEmpty" role="status" aria-live="polite" hidden>No tasks and tools found.</p>
     </section>
@@ -735,9 +1152,315 @@
     </section>
 
     <section id="panelSupport" class="panel" aria-label="Technical support tools">
-      <div class="tiles-row" id="supportTiles"></div>
+      <div class="tiles-row" id="supportTiles">
+        <div class="tile" data-task="supportAssetChange" role="button" tabindex="0" data-search="asset change replace hardware eol faulty">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10671" alt=""></span>
+          <span class="tile-title">Asset Change/Replace</span>
+          <span class="tile-desc">Please fill this form if you need your asset to be replaced/changed in case of End Of Life (EOL)/Faulty or because of Special use</span>
+        </div>
+        <div class="tile" data-task="supportLaptopRepair" role="button" tabindex="0" data-search="laptop repair incident">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10470" alt=""></span>
+          <span class="tile-title">Laptop Repair</span>
+          <span class="tile-desc">Please raise this incident request if you are facing issues with your laptop and want it to be repaired</span>
+        </div>
+        <div class="tile" data-task="supportZongDevice" role="button" tabindex="0" data-search="zong device internet">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10474" alt=""></span>
+          <span class="tile-title">Zong Device Not Working</span>
+          <span class="tile-desc">Please raise this incident request if you are facing any issues with zong internet or its device</span>
+        </div>
+        <div class="tile" data-task="supportNewPeripherals" role="button" tabindex="0" data-search="charger headset mouse keyboard peripherals">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">New Charger/Headset/Mouse/Keyboard</span>
+          <span class="tile-desc">Please raise this request if you want to request new charger/headset/mouse/keyboard</span>
+        </div>
+        <div class="tile" data-task="supportZongRecharge" role="button" tabindex="0" data-search="zong recharge">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10474" alt=""></span>
+          <span class="tile-title">Recharge Zong Device</span>
+          <span class="tile-desc">Please raise ticket if you want recharge the zong device</span>
+        </div>
+        <div class="tile" data-task="supportAssetArrangement" role="button" tabindex="0" data-search="asset arrangement assessment interview intimation event temporary">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10470" alt=""></span>
+          <span class="tile-title">Asset Arrangement for Assessment/Intimation</span>
+          <span class="tile-desc">Raise this request if you need asset for any test/assessment/interview/intimation or if temporary asset is required for any event</span>
+        </div>
+        <div class="tile" data-task="supportScreenLcd" role="button" tabindex="0" data-search="screen lcd monitor display replacement">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10544" alt=""></span>
+          <span class="tile-title">Screen/LCD request or replacement</span>
+          <span class="tile-desc">Please raise a ticket if you want to request new Screen/LCD or its replacement</span>
+        </div>
+        <div class="tile" data-task="supportRemoteDesktop" role="button" tabindex="0" data-search="remote desktop office pc disconnect rdp vpn">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10467" alt=""></span>
+          <span class="tile-title">Can't connect remotely to office PC/ Disconnecting from office Desktop</span>
+          <span class="tile-desc">Please raise this incident ticket if you cannot connect to your PC remotely or any face any issues with remote connection</span>
+        </div>
+        <div class="tile" data-task="supportTempPeripherals" role="button" tabindex="0" data-search="temporary charger headphone mouse keyboard office">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10477" alt=""></span>
+          <span class="tile-title">Request temporary charger/headphone/mouse/keyboard</span>
+          <span class="tile-desc">Please raise this request for a temporary charger/headphone/mouse/keyboard to be provided in the office.</span>
+        </div>
+        <div class="tile" data-task="supportVmDeletion" role="button" tabindex="0" data-search="vm deletion virtual machine remove">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10508" alt=""></span>
+          <span class="tile-title">VM Deletion</span>
+          <span class="tile-desc">This ticket will be created whenever any VM/VMs are deleted</span>
+        </div>
+        <div class="tile" data-task="supportVmDisk" role="button" tabindex="0" data-search="vm hard disk storage change">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10478" alt=""></span>
+          <span class="tile-title">Change VM HardDisk Storage</span>
+          <span class="tile-desc">Please raise this request if you want to change hard disk storage of VM</span>
+        </div>
+        <div class="tile" data-task="supportVmRam" role="button" tabindex="0" data-search="vm ram memory increase">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10467" alt=""></span>
+          <span class="tile-title">Increase VM RAM</span>
+          <span class="tile-desc">Please raise this request to increase RAM of VM</span>
+        </div>
+        <div class="tile" data-task="supportVmAccess" role="button" tabindex="0" data-search="vm access virtual machine permission">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">Need Access to VM</span>
+          <span class="tile-desc">Please raise this ticket if you want access to any VM (virtual machine)</span>
+        </div>
+        <div class="tile" data-task="supportVmStuck" role="button" tabindex="0" data-search="vm stuck restart access incident">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10550" alt=""></span>
+          <span class="tile-title">Can't Access VM/VM Stuck/Restart VM</span>
+          <span class="tile-desc">Please raise this incident request if you can't access VM or if VM is stuck or if you want to restart VM</span>
+        </div>
+        <div class="tile" data-task="supportVmNew" role="button" tabindex="0" data-search="new vm virtual machine provision">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10467" alt=""></span>
+          <span class="tile-title">New VM required</span>
+          <span class="tile-desc">Please raise this ticket whenever a new VM is required</span>
+        </div>
+        <div class="tile" data-task="supportPocVmUser" role="button" tabindex="0" data-search="new user vm account creation">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10517" alt=""></span>
+          <span class="tile-title">New User Creation in VM</span>
+          <span class="tile-desc">Please raise this request for creation of new user in VM</span>
+        </div>
+        <div class="tile" data-task="supportPocCostAnalysis" role="button" tabindex="0" data-search="cost analysis cloud resource pricing">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10625" alt=""></span>
+          <span class="tile-title">Cost Analysis For Cloud Resource</span>
+          <span class="tile-desc">Please raise this request to get the idea of cost of any cloud resource</span>
+        </div>
+        <div class="tile" data-task="supportPocServiceRequest" role="button" tabindex="0" data-search="poc service request customer general">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">Service Request for POC</span>
+          <span class="tile-desc">please raise this ticket if your query is related to any service required for POC/Customer however you cannot find the exact relavant kind of service request in other specific tickets</span>
+        </div>
+        <div class="tile" data-task="supportPocNewDb" role="button" tabindex="0" data-search="database poc customer new">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10600" alt=""></span>
+          <span class="tile-title">New Database Required for POC</span>
+          <span class="tile-desc">Please raise this request if you want any new database to be created for customer/POC</span>
+        </div>
+        <div class="tile" data-task="supportPocIpWhitelist" role="button" tabindex="0" data-search="ip whitelist security firewall endpoint poc">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10590" alt=""></span>
+          <span class="tile-title">IP Whitelisting/Changes in Security Settings</span>
+          <span class="tile-desc">Please raise a request here if you need changes to endpoint security configurations, including disabling security services, whitelisting IPs, etc for POC</span>
+        </div>
+        <div class="tile" data-task="supportPocVmRam" role="button" tabindex="0" data-search="poc vm ram memory increase">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10602" alt=""></span>
+          <span class="tile-title">Increase POC VM RAM</span>
+          <span class="tile-desc">Please raise this request if you want to change RAM of VM used for customer POC</span>
+        </div>
+        <div class="tile" data-task="supportPocVmDisk" role="button" tabindex="0" data-search="poc vm hard disk storage">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10532" alt=""></span>
+          <span class="tile-title">Change POC VM HardDisk</span>
+          <span class="tile-desc">Please raise this request if you want to change Hard Disk of VM used for customer POC</span>
+        </div>
+        <div class="tile" data-task="supportPocCredentials" role="button" tabindex="0" data-search="credentials database cloud resource poc">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10468" alt=""></span>
+          <span class="tile-title">Cloud Resource/Database Credentials required for POC</span>
+          <span class="tile-desc">Please raise this request if you require cloud resource or database credentials from IT for POC/customer</span>
+        </div>
+        <div class="tile" data-task="supportPocVmNew" role="button" tabindex="0" data-search="new vm poc customer">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10467" alt=""></span>
+          <span class="tile-title">New VM required for POC</span>
+          <span class="tile-desc">Please raise this request if new VM is required for customer/POC</span>
+        </div>
+        <div class="tile" data-task="supportGrp9IpWhitelist" role="button" tabindex="0" data-search="ip whitelist security endpoint firewall">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10506" alt=""></span>
+          <span class="tile-title">IP Whitelisting/Changes in Security Settings</span>
+          <span class="tile-desc">Please raise a request here if you need changes to endpoint security configurations, including disabling security services and IP whitelisting</span>
+        </div>
+        <div class="tile" data-task="supportGrp9NewAccount" role="button" tabindex="0" data-search="new account creation user">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10517" alt=""></span>
+          <span class="tile-title">Request New Account Creation</span>
+          <span class="tile-desc">Please raise this ticket if you want new account creation</span>
+        </div>
+        <div class="tile" data-task="supportGrp9AccessCreds" role="button" tabindex="0" data-search="access credentials permission login">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10513" alt=""></span>
+          <span class="tile-title">Access/Credentials Request</span>
+          <span class="tile-desc">Raise this request if you need any access or credentials</span>
+        </div>
+        <div class="tile" data-task="supportCustomerCallIssue" role="button" tabindex="0" data-search="customer call issue resolution it help">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10499" alt=""></span>
+          <span class="tile-title">Customer call/issue/resolution</span>
+          <span class="tile-desc">Please file this ticket if IT help is needed in customer call or for any issue resolution related to customer</span>
+        </div>
+        <div class="tile" data-task="supportGrp11IpWhitelist" role="button" tabindex="0" data-search="ip whitelist security endpoint firewall">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10506" alt=""></span>
+          <span class="tile-title">IP Whitelisting/Changes in Security Settings</span>
+          <span class="tile-desc">Please raise a request here if you need changes to endpoint security configurations, including disabling security services and IP whitelisting</span>
+        </div>
+        <div class="tile" data-task="supportGrp11AsteraShareSlowness" role="button" tabindex="0" data-search="astera qa share fileshare slowness slow">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">Slowness in Astera\QA Share</span>
+          <span class="tile-desc">Please raise this incident request if you are facing issues with astera/QA/build shares (fileshare)</span>
+        </div>
+        <div class="tile" data-task="supportGrp11GlobalProtect" role="button" tabindex="0" data-search="global protect vpn palo alto">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">Global Protect Not Working</span>
+          <span class="tile-desc">Please raise this incident request if you are facing issues related to global protect</span>
+        </div>
+        <div class="tile" data-task="supportGrp11InternetDisconnect" role="button" tabindex="0" data-search="internet disconnection network outage">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10519" alt=""></span>
+          <span class="tile-title">Internet Disconnection</span>
+          <span class="tile-desc">Please raise this incident request if you are constantly facing internet related issue</span>
+        </div>
+        <div class="tile" data-task="supportGrp11Sftp" role="button" tabindex="0" data-search="sftp instance file transfer">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10503" alt=""></span>
+          <span class="tile-title">Need New SFTP Instance</span>
+          <span class="tile-desc">Please raise a request if you need new sftp instance</span>
+        </div>
+        <div class="tile" data-task="supportGrp12EmployeeExit" role="button" tabindex="0" data-search="employee exit offboarding leaving organization">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10594" alt=""></span>
+          <span class="tile-title">Employee Exit Update</span>
+          <span class="tile-desc">Please raise this request to update IT for employee exit whenever any employee is leaving organization</span>
+        </div>
+        <div class="tile" data-task="supportGrp12ModifyUser" role="button" tabindex="0" data-search="modify user account designation department profile">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10514" alt=""></span>
+          <span class="tile-title">Modify User Account Details</span>
+          <span class="tile-desc">Please raise this ticket to modify any account details of users including designation, department, etc</span>
+        </div>
+        <div class="tile" data-task="supportGrp12Onboarding" role="button" tabindex="0" data-search="new employee onboarding account creation hire">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10517" alt=""></span>
+          <span class="tile-title">New Employee Onboarding/Account Creation</span>
+          <span class="tile-desc">Please raise this ticket for any new employee joining the organization</span>
+        </div>
+        <div class="tile" data-task="supportGrp13NewDb" role="button" tabindex="0" data-search="new database create sql">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10510" alt=""></span>
+          <span class="tile-title">New Database Required</span>
+          <span class="tile-desc">Please raise this request if you want any kind of new database to be created</span>
+        </div>
+        <div class="tile" data-task="supportGrp13SsmsError" role="button" tabindex="0" data-search="ssms sql server management studio error">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10512" alt=""></span>
+          <span class="tile-title">SSMS Error</span>
+          <span class="tile-desc">Please raise this incident request if you are facing any error on SSMS (sql server management studio)</span>
+        </div>
+        <div class="tile" data-task="supportGrp13CloudCreds" role="button" tabindex="0" data-search="cloud database credentials it access">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10590" alt=""></span>
+          <span class="tile-title">Cloud Resource/Database Credentials required</span>
+          <span class="tile-desc">Raise this request if you require any database or cloud resource credentials from IT</span>
+        </div>
+        <div class="tile" data-task="supportGrp13DbStorage" role="button" tabindex="0" data-search="database storage capacity increase cloud">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10473" alt=""></span>
+          <span class="tile-title">Increase Storage of Cloud Database</span>
+          <span class="tile-desc">Please raise this request if you want to increase storage/capacity of cloud database</span>
+        </div>
+        <div class="tile" data-task="supportGrp13SsmsInstall" role="button" tabindex="0" data-search="ssms install sql server management studio">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10468" alt=""></span>
+          <span class="tile-title">SSMS Installation</span>
+          <span class="tile-desc">Please raise this request if you want installation/reinstallation of SSMS (sql server management studio)</span>
+        </div>
+        <div class="tile" data-task="supportGrp14ProjectTasks" role="button" tabindex="0" data-search="project tasks jira work">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10470" alt=""></span>
+          <span class="tile-title">Project/Tasks</span>
+          <span class="tile-desc">Submit requests related to projects and tasks.</span>
+        </div>
+        <div class="tile" data-task="supportGrp14CloudChange" role="button" tabindex="0" data-search="cloud change request infrastructure">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10507" alt=""></span>
+          <span class="tile-title">Cloud Change Requests</span>
+          <span class="tile-desc">Submit requests for cloud change management.</span>
+        </div>
+        <div class="tile" data-task="supportGrp14ItInternalIncidents" role="button" tabindex="0" data-search="it internal incident operations">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10521" alt=""></span>
+          <span class="tile-title">IT Internal Incidents</span>
+          <span class="tile-desc">Report internal incidents for IT operations.</span>
+        </div>
+        <div class="tile" data-task="supportGrp14IncidentRequest" role="button" tabindex="0" data-search="incident generic catch-all">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10520" alt=""></span>
+          <span class="tile-title">Incident Request</span>
+          <span class="tile-desc">Please raise this incident request if your issue is any incident however you cannot find exact relavant incident request in other incident related tickets</span>
+        </div>
+        <div class="tile" data-task="supportGrp14ServiceRequest" role="button" tabindex="0" data-search="service request it general">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">Service Request</span>
+          <span class="tile-desc">please raise this ticket if your query is related to any service from IT however you cannot find the exact relavant kind of service request in other specific tickets</span>
+        </div>
+        <div class="tile" data-task="supportGrp14RequestChange" role="button" tabindex="0" data-search="change approval emergency normal">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10528" alt=""></span>
+          <span class="tile-title">Request a change</span>
+          <span class="tile-desc">Please fill this form for normal changes or emergency change approvals</span>
+        </div>
+        <div class="tile" data-task="supportGrp14PostIncidentReview" role="button" tabindex="0" data-search="post incident review RCA report">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10499" alt=""></span>
+          <span class="tile-title">Post Incident Review Report</span>
+          <span class="tile-desc">This incident review is basically incident report providing RCA of incident and how to be safe from same issues in future.</span>
+        </div>
+        <div class="tile" data-task="supportGrp14ExpenseForm" role="button" tabindex="0" data-search="expense purchase subscription procurement equipment">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">Expense Form</span>
+          <span class="tile-desc">Use this ticket to request for any purchase, subscription, or to procure/buying any software, services, or equipment.</span>
+        </div>
+        <div class="tile" data-task="supportGrp14GuestWifi" role="button" tabindex="0" data-search="guest wifi temporary access wireless">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10519" alt=""></span>
+          <span class="tile-title">Get a guest wifi account</span>
+          <span class="tile-desc">Raise a request to ask for temp wifi access for guests.</span>
+        </div>
+        <div class="tile" data-task="supportGrp14CloudTask" role="button" tabindex="0" data-search="cloud task automation">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10468" alt=""></span>
+          <span class="tile-title">Cloud Task</span>
+          <span class="tile-desc">Submit cloud task or related automation requests.</span>
+        </div>
+        <div class="tile" data-task="supportGrp15SpamEmail" role="button" tabindex="0" data-search="spam email phishing junk">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10508" alt=""></span>
+          <span class="tile-title">Spam Email Received</span>
+          <span class="tile-desc">Please raise this incident request if you receive spam email</span>
+        </div>
+        <div class="tile" data-task="supportGrp15EmailQuarantine" role="button" tabindex="0" data-search="email missing quarantine release">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10527" alt=""></span>
+          <span class="tile-title">Email missing/release quarantined email</span>
+          <span class="tile-desc">Please raise this incident request if you think any of your emails is missing or you want to release quarantined email</span>
+        </div>
+        <div class="tile" data-task="supportGrp15MfaSetup" role="button" tabindex="0" data-search="mfa multi factor authentication 2fa">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10594" alt=""></span>
+          <span class="tile-title">MFA Setup</span>
+          <span class="tile-desc">Please raise this ticket to get help in setting up MFA (multi factor authentication)</span>
+        </div>
+        <div class="tile" data-task="supportGrp15MailboxMembers" role="button" tabindex="0" data-search="mailbox distribution list members add remove">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10492" alt=""></span>
+          <span class="tile-title">Addition/Deletion of members in Mailbox/Distribution list</span>
+          <span class="tile-desc">Raise this request if you want to modify/add/delete members of mailbox/distribution list</span>
+        </div>
+        <div class="tile" data-task="supportGrp15MailboxDlCreate" role="button" tabindex="0" data-search="mailbox distribution list create delete">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10628" alt=""></span>
+          <span class="tile-title">Mailbox/Distribution List Creation/Deletion</span>
+          <span class="tile-desc">Please raise this request for creation/deletion of mailbox/distribution list</span>
+        </div>
+        <div class="tile" data-task="supportGrp15SharedMailbox" role="button" tabindex="0" data-search="shared mailbox">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10499" alt=""></span>
+          <span class="tile-title">Shared Mailbox</span>
+          <span class="tile-desc">Please raise this request for creation of shared mailbox or modification in existing shared mailbox</span>
+        </div>
+        <div class="tile" data-task="supportGrp15EmailForward" role="button" tabindex="0" data-search="email forwarding forward">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">Setup Email Forwarding</span>
+          <span class="tile-desc">Please raise this request if you want to setup email forwarding of any account</span>
+        </div>
+        <div class="tile" data-task="supportGrp15PasswordReset" role="button" tabindex="0" data-search="password reset mailbox account">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10511" alt=""></span>
+          <span class="tile-title">Reset Account/Mailbox Password</span>
+          <span class="tile-desc">Please raise this ticket to change/reset password of any mailbox or user account</span>
+        </div>
+        <div class="tile" data-task="supportGrp15RecordingAccess" role="button" tabindex="0" data-search="recording meeting call access">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10507" alt=""></span>
+          <span class="tile-title">Recording Access Required</span>
+          <span class="tile-desc">Please raise this ticket if you want access to any call/meeting recording</span>
+        </div>
+        <div class="tile" data-task="supportGrp15Signout" role="button" tabindex="0" data-search="signout logout sign in microsoft">
+          <span class="tile-icon" aria-hidden="true"><img class="tile-icon-img" src="https://asterait.atlassian.net/rest/servicedeskapi/requesttype/icon/type/SD_REQTYPE/id/10518" alt=""></span>
+          <span class="tile-title">Signout Issue</span>
+          <span class="tile-desc">Please raise this incident request if you are facing signout/logout issues on microsoft applications or if you face issues in signing in to microsoft applications</span>
+        </div>
+      </div>
       <p class="search-empty-state" id="supportSearchEmpty" role="status" aria-live="polite" hidden>No tasks and tools found.</p>
-      <div class="placeholder-panel" id="supportPlaceholder">
+      <div class="placeholder-panel" id="supportPlaceholder" hidden>
         Technical support tools will appear here — tickets, runbooks, and quick links.
       </div>
     </section>
@@ -751,14 +1474,26 @@
           <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block"><path fill="none" stroke="url(#co-azure-depth)" stroke-width="2.2" stroke-linecap="round" d="M7 7l10 10M17 7L7 17"/></svg>
         </button>
       </div>
-      <form id="taskForm">
-        <div id="formFields"></div>
-        <div id="formMessage" class="message"></div>
-        <div class="modal-actions">
-          <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
-          <button type="submit" class="btn-submit" id="submitBtn">Run</button>
-        </div>
+      <div id="modalFormBlock">
+        <form id="taskForm">
+          <div id="formFields"></div>
+          <div id="formMessage" class="message"></div>
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+            <button type="submit" class="btn-submit" id="submitBtn">Run</button>
+          </div>
 </form>
+      </div>
+      <div id="modalIframeBlock" class="modal-iframe-block" hidden>
+        <div class="modal-external-panel">
+          <p class="modal-external-lead" id="modalExternalExplain">Jira Service Desk does not allow its request forms to load inside other sites or Teams tabs (Atlassian blocks embedding for security). Open the form in your browser using the button below.</p>
+          <button type="button" class="btn-submit modal-external-btn" id="modalOpenExternalBtn">Open request form</button>
+        </div>
+        <p class="modal-iframe-external"><a id="modalExternalLink" href="#" rel="noopener noreferrer">Open in browser</a></p>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="iframeCloseBtn">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -768,7 +1503,18 @@
       const API_BASE = '';
       let config = { authLoginUrl: '/auth/login', apiBase: '', baseUrl: '' };
       let currentTask = null;
+      /** Set when a support tile opens the Jira external URL (iframe blocked by Atlassian). */
+      let currentExternalUrl = null;
       let currentSection = 'operations';
+      var endpointHealthTimer = null;
+      var endpointHealthRetryTimer = null;
+      var endpointHealthRetryCount = 0;
+      var endpointAvailabilityExpanded = true;
+      try {
+        if (sessionStorage.getItem('nimbus.endpointAvailability.expanded') === '0') {
+          endpointAvailabilityExpanded = false;
+        }
+      } catch (_) {}
 
       const pipelineFields = [
         { name: 'project', label: 'Project (optional)', type: 'select', required: false, options: ['', 'Astera Cloud', 'Enterprise'] },
@@ -780,10 +1526,59 @@
         { name: 'notes', label: 'Notes', type: 'textarea', required: false }
       ];
 
+      /** Same as pipelineFields but without project/pipelineId — used when the tile is bound to a fixed pipeline. */
+      const pipelineRunFields = pipelineFields.filter(function(f) {
+        return f.name !== 'project' && f.name !== 'pipelineId';
+      });
+
+      var JIRA_SERVICE_DESK_BASE = 'https://asterait.atlassian.net';
+
       const taskSchemas = {
         opsPipeline: { title: 'Release pipeline', endpoint: '/api/triggerPipeline', method: 'POST', fields: pipelineFields },
         opsCloudJob: { title: 'Cloud batch job', endpoint: '/api/triggerPipeline', method: 'POST', fields: pipelineFields },
         opsHealthCheck: { title: 'Environment check', endpoint: '/api/triggerPipeline', method: 'POST', fields: pipelineFields },
+        opsAcDbInit: {
+          title: 'Astera Cloud Database Initialization Pipeline',
+          endpoint: '/api/triggerPipeline',
+          method: 'POST',
+          fields: pipelineRunFields,
+          pipelineDefaults: { pipelineId: 297, project: 'Astera Cloud' }
+        },
+        opsAcTenantReset: {
+          title: 'Astera Cloud Tenant Reset Pipeline',
+          endpoint: '/api/triggerPipeline',
+          method: 'POST',
+          fields: pipelineRunFields,
+          pipelineDefaults: { pipelineId: 298, project: 'Astera Cloud' }
+        },
+        opsAcCertRenewal: {
+          title: 'Astera Cloud Certificate Renewal (Automation) Pipeline',
+          endpoint: '/api/triggerPipeline',
+          method: 'POST',
+          fields: pipelineRunFields,
+          pipelineDefaults: { pipelineId: 299, project: 'Astera Cloud' }
+        },
+        opsAcAzureCosts: {
+          title: 'Astera Cloud Azure Costs Analysis Pipeline',
+          endpoint: '/api/triggerPipeline',
+          method: 'POST',
+          fields: pipelineRunFields,
+          pipelineDefaults: { pipelineId: 300, project: 'Astera Cloud' }
+        },
+        opsAcPodLogs: {
+          title: 'Astera Cloud Pod Logs Pipeline',
+          endpoint: '/api/triggerPipeline',
+          method: 'POST',
+          fields: pipelineRunFields,
+          pipelineDefaults: { pipelineId: 292, project: 'Astera Cloud' }
+        },
+        opsAcUsageRequests: {
+          title: 'Astera Cloud Usage Requests Pipeline',
+          endpoint: '/api/triggerPipeline',
+          method: 'POST',
+          fields: pipelineRunFields,
+          pipelineDefaults: { pipelineId: 295, project: 'Astera Cloud' }
+        },
         opsReport: {
           title: 'Operations report',
           endpoint: '/api/report/run',
@@ -795,8 +1590,404 @@
             { name: 'format', label: 'Format', type: 'select', required: true, options: ['PDF', 'Excel', 'CSV'] },
             { name: 'notes', label: 'Notes', type: 'textarea', required: false }
           ]
-        }
+        },
+        supportAssetChange: { title: 'Asset Change/Replace', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/196' },
+        supportLaptopRepair: { title: 'Laptop Repair', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/38' },
+        supportZongDevice: { title: 'Zong Device Not Working', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/37' },
+        supportNewPeripherals: { title: 'New Charger/Headset/Mouse/Keyboard', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/36' },
+        supportZongRecharge: { title: 'Recharge Zong Device', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/35' },
+        supportAssetArrangement: { title: 'Asset Arrangement for Assessment/Intimation', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/34' },
+        supportScreenLcd: { title: 'Screen/LCD request or replacement', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/33' },
+        supportRemoteDesktop: { title: "Can't connect remotely to office PC/ Disconnecting from office Desktop", iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/31' },
+        supportTempPeripherals: { title: 'Request temporary charger/headphone/mouse/keyboard', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/10/create/21' },
+        supportVmDeletion: { title: 'VM Deletion', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/8/create/163' },
+        supportVmDisk: { title: 'Change VM HardDisk Storage', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/8/create/30' },
+        supportVmRam: { title: 'Increase VM RAM', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/8/create/29' },
+        supportVmAccess: { title: 'Need Access to VM', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/8/create/28' },
+        supportVmStuck: { title: "Can't Access VM/VM Stuck/Restart VM", iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/8/create/27' },
+        supportVmNew: { title: 'New VM required', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/8/create/17' },
+        supportPocVmUser: { title: 'New User Creation in VM', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/105' },
+        supportPocCostAnalysis: { title: 'Cost Analysis For Cloud Resource', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/104' },
+        supportPocServiceRequest: { title: 'Service Request for POC', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/103' },
+        supportPocNewDb: { title: 'New Database Required for POC', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/102' },
+        supportPocIpWhitelist: { title: 'IP Whitelisting/Changes in Security Settings', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/101' },
+        supportPocVmRam: { title: 'Increase POC VM RAM', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/100' },
+        supportPocVmDisk: { title: 'Change POC VM HardDisk', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/99' },
+        supportPocCredentials: { title: 'Cloud Resource/Database Credentials required for POC', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/98' },
+        supportPocVmNew: { title: 'New VM required for POC', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/16/create/97' },
+        supportGrp9IpWhitelist: { title: 'IP Whitelisting/Changes in Security Settings', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/9/create/63' },
+        supportGrp9NewAccount: { title: 'Request New Account Creation', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/9/create/61' },
+        supportGrp9AccessCreds: { title: 'Access/Credentials Request', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/9/create/32' },
+        supportCustomerCallIssue: { title: 'Customer call/issue/resolution', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/49/create/130' },
+        supportGrp11IpWhitelist: { title: 'IP Whitelisting/Changes in Security Settings', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/11/create/63' },
+        supportGrp11AsteraShareSlowness: { title: 'Slowness in Astera\\QA Share', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/11/create/44' },
+        supportGrp11GlobalProtect: { title: 'Global Protect Not Working', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/11/create/43' },
+        supportGrp11InternetDisconnect: { title: 'Internet Disconnection', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/11/create/42' },
+        supportGrp11Sftp: { title: 'Need New SFTP Instance', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/11/create/39' },
+        supportGrp12EmployeeExit: { title: 'Employee Exit Update', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/12/create/46' },
+        supportGrp12ModifyUser: { title: 'Modify User Account Details', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/12/create/45' },
+        supportGrp12Onboarding: { title: 'New Employee Onboarding/Account Creation', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/12/create/19' },
+        supportGrp13NewDb: { title: 'New Database Required', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/13/create/62' },
+        supportGrp13SsmsError: { title: 'SSMS Error', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/13/create/60' },
+        supportGrp13CloudCreds: { title: 'Cloud Resource/Database Credentials required', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/13/create/59' },
+        supportGrp13DbStorage: { title: 'Increase Storage of Cloud Database', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/13/create/58' },
+        supportGrp13SsmsInstall: { title: 'SSMS Installation', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/13/create/57' },
+        supportGrp14ProjectTasks: { title: 'Project/Tasks', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/328' },
+        supportGrp14CloudChange: { title: 'Cloud Change Requests', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/295' },
+        supportGrp14ItInternalIncidents: { title: 'IT Internal Incidents', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/64' },
+        supportGrp14IncidentRequest: { title: 'Incident Request', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/41' },
+        supportGrp14ServiceRequest: { title: 'Service Request', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/40' },
+        supportGrp14RequestChange: { title: 'Request a change', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/26' },
+        supportGrp14PostIncidentReview: { title: 'Post Incident Review Report', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/25' },
+        supportGrp14ExpenseForm: { title: 'Expense Form', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/22' },
+        supportGrp14GuestWifi: { title: 'Get a guest wifi account', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/11' },
+        supportGrp14CloudTask: { title: 'Cloud Task', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/14/create/262' },
+        supportGrp15SpamEmail: { title: 'Spam Email Received', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/56' },
+        supportGrp15EmailQuarantine: { title: 'Email missing/release quarantined email', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/55' },
+        supportGrp15MfaSetup: { title: 'MFA Setup', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/54' },
+        supportGrp15MailboxMembers: { title: 'Addition/Deletion of members in Mailbox/Distribution list', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/53' },
+        supportGrp15MailboxDlCreate: { title: 'Mailbox/Distribution List Creation/Deletion', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/52' },
+        supportGrp15SharedMailbox: { title: 'Shared Mailbox', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/51' },
+        supportGrp15EmailForward: { title: 'Setup Email Forwarding', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/50' },
+        supportGrp15PasswordReset: { title: 'Reset Account/Mailbox Password', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/49' },
+        supportGrp15RecordingAccess: { title: 'Recording Access Required', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/48' },
+        supportGrp15Signout: { title: 'Signout Issue', iframeUrl: JIRA_SERVICE_DESK_BASE + '/servicedesk/customer/portal/1/group/15/create/47' }
       };
+
+      var OPS_STATUS_SVG_OK =
+        '<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7.4 12.1l2.7 2.5 5.6-6.3" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      var OPS_STATUS_SVG_FAIL =
+        '<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><circle cx="12" cy="12" r="9.25" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M9 9l6 6M15 9l-6 6" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round"/></svg>';
+      var OPS_STATUS_SVG_PENDING =
+        '<svg viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="currentColor" opacity="0.75"/></svg>';
+
+      /**
+       * Fallback only if API omits `groups` (older server). Prefer server-built groups from GET /endpointHealth.
+       */
+      var ENDPOINT_HEALTH_ROWS = [
+        [
+          { title: 'Astera Cloud', count: 4 },
+          { title: 'QA', count: 4 },
+          { title: 'Docspire', count: 4 },
+          { title: 'Docspire-Test', count: 4 }
+        ],
+        [
+          { title: 'Dataprep QA', count: 4 },
+          { title: 'Dataprep Production', count: 4 },
+          { title: 'SupportAgentPortal Production', count: 5 },
+          { title: 'SupportAgentPortal QA', count: 5 }
+        ]
+      ];
+
+      /** Failures (✗) first, then checking, then OK — within one column. */
+      function sortEndpointItemsForDisplay(items) {
+        if (!items || !items.length) return items;
+        function rank(it) {
+          if (it.pending) return 1;
+          if (it.ok === true) return 2;
+          return 0;
+        }
+        return items.slice().sort(function(a, b) {
+          var ra = rank(a);
+          var rb = rank(b);
+          if (ra !== rb) return ra - rb;
+          return 0;
+        });
+      }
+
+      function appendEndpointRow(container, it) {
+        var row = document.createElement('div');
+        row.className = 'ops-endpoint-row';
+        row.setAttribute('role', 'listitem');
+        row.title = it.url || '';
+        var host = document.createElement('span');
+        host.className = 'ops-endpoint-hostname';
+        host.textContent = it.hostname || '';
+        var bubble = document.createElement('span');
+        var label;
+        if (it.pending) {
+          bubble.className = 'ops-status-bubble ops-status-bubble--pending';
+          label = 'Checking…';
+          bubble.setAttribute('aria-label', label);
+          bubble.innerHTML = OPS_STATUS_SVG_PENDING;
+        } else {
+          bubble.className =
+            'ops-status-bubble ' + (it.ok ? 'ops-status-bubble--ok' : 'ops-status-bubble--fail');
+          label =
+            it.ok === true
+              ? 'HTTP 200'
+              : it.statusCode != null
+                ? 'HTTP ' + it.statusCode
+                : it.error
+                  ? 'Unreachable: ' + it.error
+                  : 'Unreachable';
+          bubble.setAttribute('aria-label', label);
+          bubble.innerHTML = it.ok ? OPS_STATUS_SVG_OK : OPS_STATUS_SVG_FAIL;
+        }
+        row.appendChild(host);
+        row.appendChild(bubble);
+        container.appendChild(row);
+      }
+
+      /** ok = all HTTP 200; fail = any down; pending = any still checking */
+      function aggregateGroupStatus(slice) {
+        if (!slice || !slice.length) return 'pending';
+        for (var i = 0; i < slice.length; i++) {
+          if (slice[i].pending) return 'pending';
+        }
+        for (var j = 0; j < slice.length; j++) {
+          if (slice[j].ok !== true) return 'fail';
+        }
+        return 'ok';
+      }
+
+      function appendEndpointSummaryBubble(container, status) {
+        var bubble = document.createElement('span');
+        if (status === 'pending') {
+          bubble.className = 'ops-status-bubble ops-status-bubble--pending';
+          bubble.setAttribute('aria-label', 'Checking…');
+          bubble.innerHTML = OPS_STATUS_SVG_PENDING;
+        } else if (status === 'ok') {
+          bubble.className = 'ops-status-bubble ops-status-bubble--ok';
+          bubble.setAttribute('aria-label', 'All endpoints returned HTTP 200');
+          bubble.innerHTML = OPS_STATUS_SVG_OK;
+        } else {
+          bubble.className = 'ops-status-bubble ops-status-bubble--fail';
+          bubble.setAttribute('aria-label', 'One or more endpoints are not OK');
+          bubble.innerHTML = OPS_STATUS_SVG_FAIL;
+        }
+        container.appendChild(bubble);
+      }
+
+      function buildLegacyGroupsFromItems(items) {
+        var groups = [];
+        var idx = 0;
+        ENDPOINT_HEALTH_ROWS.forEach(function(row) {
+          row.forEach(function(col) {
+            groups.push({
+              title: col.title,
+              items: items.slice(idx, idx + col.count)
+            });
+            idx += col.count;
+          });
+        });
+        var overflow = idx < items.length ? items.slice(idx) : [];
+        return { groups: groups, overflow: overflow };
+      }
+
+      function renderEndpointCollapsedSummary(groups, overflow) {
+        var cont = document.getElementById('opsEndpointCollapsed');
+        if (!cont) return;
+        cont.innerHTML = '';
+        cont.setAttribute('role', 'region');
+        cont.setAttribute('aria-label', 'Endpoint availability summary');
+        var grid = document.createElement('div');
+        grid.className = 'ops-endpoint-collapsed-grid';
+        groups.forEach(function(g) {
+          var cell = document.createElement('div');
+          cell.className = 'ops-endpoint-summary-cell';
+          var name = document.createElement('span');
+          name.className = 'ops-endpoint-summary-name';
+          name.textContent = g.title;
+          cell.appendChild(name);
+          appendEndpointSummaryBubble(cell, aggregateGroupStatus(g.items));
+          grid.appendChild(cell);
+        });
+        if (overflow && overflow.length) {
+          var cell2 = document.createElement('div');
+          cell2.className = 'ops-endpoint-summary-cell ops-endpoint-summary-cell--full';
+          var name2 = document.createElement('span');
+          name2.className = 'ops-endpoint-summary-name';
+          name2.textContent = 'Other';
+          cell2.appendChild(name2);
+          appendEndpointSummaryBubble(cell2, aggregateGroupStatus(overflow));
+          grid.appendChild(cell2);
+        }
+        cont.appendChild(grid);
+      }
+
+      function setEndpointToggleButtonState(btn, expanded, enabled) {
+        var label = expanded ? 'Show summary only' : 'Show all endpoints';
+        var tip = expanded ? 'Show summary only' : 'Show all endpoints';
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', tip);
+        btn.disabled = !enabled;
+      }
+
+      function applyEndpointAvailabilityLayout() {
+        var wrap = document.getElementById('opsEndpointExpandedWrap');
+        var collapsed = document.getElementById('opsEndpointCollapsed');
+        var btn = document.getElementById('opsEndpointToggle');
+        var panel = document.getElementById('opsEndpointPanel');
+        var emptyEl = document.getElementById('opsEndpointEmpty');
+        if (!wrap || !collapsed || !btn) return;
+        var showingEmpty = emptyEl && !emptyEl.hidden;
+        if (showingEmpty) {
+          wrap.hidden = true;
+          collapsed.hidden = true;
+          wrap.setAttribute('aria-hidden', 'true');
+          collapsed.setAttribute('aria-hidden', 'true');
+          btn.setAttribute('aria-expanded', 'false');
+          btn.setAttribute('aria-label', 'No endpoint checks configured');
+          btn.removeAttribute('title');
+          btn.disabled = true;
+          return;
+        }
+        wrap.hidden = !endpointAvailabilityExpanded;
+        collapsed.hidden = endpointAvailabilityExpanded;
+        wrap.setAttribute('aria-hidden', endpointAvailabilityExpanded ? 'false' : 'true');
+        collapsed.setAttribute('aria-hidden', endpointAvailabilityExpanded ? 'true' : 'false');
+        setEndpointToggleButtonState(btn, endpointAvailabilityExpanded, true);
+        if (panel) {
+          panel.classList.toggle('ops-endpoint-panel--collapsed', !endpointAvailabilityExpanded);
+        }
+      }
+
+      function renderEndpointHealthItems(data) {
+        var items = data.items;
+        var list = document.getElementById('opsEndpointList');
+        var emptyEl = document.getElementById('opsEndpointEmpty');
+        var mismatchEl = document.getElementById('opsEndpointMismatch');
+        if (!list || !emptyEl) return;
+        list.innerHTML = '';
+        if (mismatchEl) mismatchEl.hidden = true;
+        if (!items || items.length === 0) {
+          emptyEl.hidden = false;
+          var collapsedEl = document.getElementById('opsEndpointCollapsed');
+          if (collapsedEl) collapsedEl.innerHTML = '';
+          applyEndpointAvailabilityLayout();
+          return;
+        }
+        emptyEl.hidden = true;
+        var groupsPayload = data.groups;
+        var overflowPayload = data.overflow;
+        if (!groupsPayload || !groupsPayload.length) {
+          var legacy = buildLegacyGroupsFromItems(items);
+          groupsPayload = legacy.groups;
+          overflowPayload = legacy.overflow;
+        }
+        var globalColIdx = 0;
+        groupsPayload.forEach(function(g) {
+          var colEl = document.createElement('section');
+          colEl.className = 'ops-endpoint-col';
+          colEl.setAttribute('aria-label', g.title);
+          var hid = 'ops-col-h-' + globalColIdx;
+          globalColIdx += 1;
+          var h = document.createElement('h3');
+          h.className = 'ops-endpoint-col-heading';
+          h.id = hid;
+          h.textContent = g.title;
+          colEl.appendChild(h);
+          var body = document.createElement('div');
+          body.className = 'ops-endpoint-col-body';
+          body.setAttribute('role', 'list');
+          body.setAttribute('aria-labelledby', hid);
+          var slice = g.items || [];
+          sortEndpointItemsForDisplay(slice).forEach(function(it) {
+            appendEndpointRow(body, it);
+          });
+          colEl.appendChild(body);
+          list.appendChild(colEl);
+        });
+        if (overflowPayload && overflowPayload.length) {
+          var rest = document.createElement('section');
+          rest.className = 'ops-endpoint-col ops-endpoint-col--overflow';
+          var h2 = document.createElement('h3');
+          h2.className = 'ops-endpoint-col-heading';
+          h2.id = 'ops-col-h-other';
+          h2.textContent = 'Other';
+          rest.appendChild(h2);
+          var body2 = document.createElement('div');
+          body2.className = 'ops-endpoint-col-body';
+          body2.setAttribute('role', 'list');
+          body2.setAttribute('aria-labelledby', 'ops-col-h-other');
+          overflowPayload.forEach(function(it) {
+            appendEndpointRow(body2, it);
+          });
+          rest.appendChild(body2);
+          list.appendChild(rest);
+        }
+        if (mismatchEl && data.layoutMismatch) {
+          var n = data.urlCount != null ? data.urlCount : items.length;
+          var exp = data.layoutExpectedUrlCount != null ? data.layoutExpectedUrlCount : 34;
+          mismatchEl.hidden = false;
+          mismatchEl.textContent =
+            'This API has ' +
+            n +
+            ' health-check URL(s), but the layout expects ' +
+            exp +
+            '. Update HEALTH_CHECK_URLS on the server that runs this app and restart it (Teams/ngrok may be pointing at a different host than your local machine).';
+        }
+        renderEndpointCollapsedSummary(groupsPayload, overflowPayload);
+        applyEndpointAvailabilityLayout();
+      }
+
+      function clearEndpointHealthRetry() {
+        if (endpointHealthRetryTimer) {
+          clearTimeout(endpointHealthRetryTimer);
+          endpointHealthRetryTimer = null;
+        }
+        endpointHealthRetryCount = 0;
+      }
+
+      function stopEndpointHealthPolling() {
+        clearEndpointHealthRetry();
+        if (endpointHealthTimer) {
+          clearInterval(endpointHealthTimer);
+          endpointHealthTimer = null;
+        }
+      }
+
+      async function fetchEndpointHealth(fromRetry) {
+        var updatedEl = document.getElementById('opsEndpointUpdated');
+        if (!fromRetry) {
+          clearEndpointHealthRetry();
+        }
+        if (!fromRetry && updatedEl) updatedEl.textContent = 'Checking…';
+        try {
+          var base = (config.apiBase || API_BASE || '').replace(/\/$/, '');
+          var healthUrl = base ? base + '/endpointHealth' : '/api/endpointHealth';
+          var r = await fetch(healthUrl, { credentials: 'include' });
+          var data = await r.json().catch(function() {
+            return {};
+          });
+          if (r.status === 401) {
+            if (updatedEl) updatedEl.textContent = '';
+            return;
+          }
+          if (r.ok && data.success && Array.isArray(data.items)) {
+            renderEndpointHealthItems(data);
+            if (data.pending) {
+              endpointHealthRetryCount += 1;
+              if (endpointHealthRetryCount < 50) {
+                endpointHealthRetryTimer = setTimeout(function() {
+                  fetchEndpointHealth(true);
+                }, 400);
+              } else if (updatedEl) {
+                updatedEl.textContent = 'Status check is taking longer than expected';
+              }
+              return;
+            }
+            clearEndpointHealthRetry();
+            var t =
+              data.checkedAt != null && data.checkedAt !== ''
+                ? new Date(data.checkedAt)
+                : new Date();
+            if (updatedEl) updatedEl.textContent = 'Updated ' + t.toLocaleTimeString();
+          } else {
+            if (updatedEl) updatedEl.textContent = 'Could not load status';
+          }
+        } catch (_) {
+          if (updatedEl) updatedEl.textContent = 'Could not load status';
+        }
+      }
+
+      function startEndpointHealthPolling() {
+        stopEndpointHealthPolling();
+        fetchEndpointHealth();
+        endpointHealthTimer = setInterval(fetchEndpointHealth, 30000);
+      }
 
       function checkOriginMismatch() {
         var el = document.getElementById('originWarning');
@@ -829,6 +2020,9 @@
         document.getElementById('userInfo').textContent = '';
         document.getElementById('loginBtn').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'none';
+        stopEndpointHealthPolling();
+        var ep = document.getElementById('opsEndpointPanel');
+        if (ep) ep.hidden = true;
       }
 
       function showBoard(user) {
@@ -837,6 +2031,9 @@
         document.getElementById('userInfo').textContent = user ? user : '';
         document.getElementById('loginBtn').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'inline-block';
+        var ep = document.getElementById('opsEndpointPanel');
+        if (ep) ep.hidden = false;
+        startEndpointHealthPolling();
       }
 
       function goToMicrosoftLogin() {
@@ -983,6 +2180,23 @@
 
       document.getElementById('tileSearch').addEventListener('input', applyTileSearch);
 
+      /**
+       * Jira/Atlassian blocks cross-origin iframes; Teams expects external HTTPS links via the SDK.
+       */
+      async function openExternalFormUrl(url) {
+        if (!url || !/^https?:\/\//i.test(url)) return;
+        try {
+          if (typeof microsoftTeams !== 'undefined' && microsoftTeams.app && typeof microsoftTeams.app.openLink === 'function') {
+            await microsoftTeams.app.initialize();
+            await microsoftTeams.app.openLink(url);
+            return;
+          }
+        } catch (err) {
+          console.warn('Teams openLink failed, using window.open', err);
+        }
+        window.open(url, '_blank', 'noopener,noreferrer');
+      }
+
       function renderFormFields(schema) {
         const container = document.getElementById('formFields');
         container.innerHTML = '';
@@ -1025,19 +2239,44 @@
         if (!schema) return;
         currentTask = taskId;
         document.getElementById('modalTitle').textContent = schema.title;
-        renderFormFields(schema);
-        document.getElementById('formMessage').classList.remove('show', 'success', 'error');
-        document.getElementById('formMessage').textContent = '';
+        var modalEl = document.getElementById('modal');
+        var formBlock = document.getElementById('modalFormBlock');
+        var iframeBlock = document.getElementById('modalIframeBlock');
+        var extLink = document.getElementById('modalExternalLink');
+
+        if (schema.iframeUrl) {
+          currentExternalUrl = schema.iframeUrl;
+          modalEl.classList.add('modal--iframe');
+          formBlock.hidden = true;
+          iframeBlock.hidden = false;
+          extLink.href = schema.iframeUrl;
+        } else {
+          currentExternalUrl = null;
+          modalEl.classList.remove('modal--iframe');
+          formBlock.hidden = false;
+          iframeBlock.hidden = true;
+          renderFormFields(schema);
+          document.getElementById('formMessage').classList.remove('show', 'success', 'error');
+          document.getElementById('formMessage').textContent = '';
+        }
         document.getElementById('overlay').classList.add('open');
         document.getElementById('overlay').setAttribute('aria-hidden', 'false');
         requestAnimationFrame(function() {
-          document.getElementById('modalCloseBtn').focus();
+          if (schema.iframeUrl) {
+            document.getElementById('modalOpenExternalBtn').focus();
+          } else {
+            document.getElementById('modalCloseBtn').focus();
+          }
         });
       }
 
       function closeModal() {
         document.getElementById('overlay').classList.remove('open');
         document.getElementById('overlay').setAttribute('aria-hidden', 'true');
+        document.getElementById('modal').classList.remove('modal--iframe');
+        document.getElementById('modalFormBlock').hidden = false;
+        document.getElementById('modalIframeBlock').hidden = true;
+        currentExternalUrl = null;
         currentTask = null;
       }
 
@@ -1051,10 +2290,15 @@
         e.preventDefault();
         if (!currentTask) return;
         const schema = taskSchemas[currentTask];
+        if (schema.iframeUrl) return;
         const formData = new FormData(document.getElementById('taskForm'));
         const body = {};
+        if (schema.pipelineDefaults) {
+          Object.assign(body, schema.pipelineDefaults);
+        }
         schema.fields.forEach(function(f) {
-          body[f.name] = formData.get(f.name) || undefined;
+          const v = formData.get(f.name);
+          body[f.name] = v !== null && v !== undefined && String(v).trim() !== '' ? v : undefined;
         });
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
@@ -1087,7 +2331,16 @@
       });
 
       document.getElementById('cancelBtn').addEventListener('click', closeModal);
+      document.getElementById('iframeCloseBtn').addEventListener('click', closeModal);
       document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
+      document.getElementById('modalOpenExternalBtn').addEventListener('click', function() {
+        if (currentExternalUrl) openExternalFormUrl(currentExternalUrl);
+      });
+      document.getElementById('modalExternalLink').addEventListener('click', function(e) {
+        if (!currentExternalUrl) return;
+        e.preventDefault();
+        openExternalFormUrl(currentExternalUrl);
+      });
       document.getElementById('overlay').addEventListener('click', function(e) {
         if (e.target === document.getElementById('overlay')) closeModal();
       });
@@ -1096,11 +2349,38 @@
       document.getElementById('loginPromptBtn').addEventListener('click', goToMicrosoftLogin);
       document.getElementById('logoutBtn').addEventListener('click', logout);
 
+      (function initEndpointAvailabilityToggle() {
+        var btn = document.getElementById('opsEndpointToggle');
+        if (!btn) return;
+        setEndpointToggleButtonState(btn, endpointAvailabilityExpanded, true);
+        btn.addEventListener('click', function() {
+          if (btn.disabled) return;
+          endpointAvailabilityExpanded = !endpointAvailabilityExpanded;
+          try {
+            sessionStorage.setItem('nimbus.endpointAvailability.expanded', endpointAvailabilityExpanded ? '1' : '0');
+          } catch (_) {}
+          applyEndpointAvailabilityLayout();
+        });
+      })();
+
       document.getElementById('opsTiles').addEventListener('click', function(e) {
         var tile = e.target.closest('.tile');
         if (tile) openModal(tile.getAttribute('data-task'));
       });
       document.getElementById('opsTiles').addEventListener('keydown', function(e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        var tile = e.target.closest('.tile');
+        if (tile) {
+          e.preventDefault();
+          openModal(tile.getAttribute('data-task'));
+        }
+      });
+
+      document.getElementById('supportTiles').addEventListener('click', function(e) {
+        var tile = e.target.closest('.tile');
+        if (tile) openModal(tile.getAttribute('data-task'));
+      });
+      document.getElementById('supportTiles').addEventListener('keydown', function(e) {
         if (e.key !== 'Enter' && e.key !== ' ') return;
         var tile = e.target.closest('.tile');
         if (tile) {
