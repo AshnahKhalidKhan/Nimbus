@@ -1986,7 +1986,7 @@
       function startEndpointHealthPolling() {
         stopEndpointHealthPolling();
         fetchEndpointHealth();
-        endpointHealthTimer = setInterval(fetchEndpointHealth, 30000);
+        endpointHealthTimer = setInterval(fetchEndpointHealth, 5000);
       }
 
       function checkOriginMismatch() {

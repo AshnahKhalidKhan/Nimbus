@@ -11,8 +11,8 @@ const axios = require('axios');
 const { GROUPS, expectedUrlCount } = require('../config/endpointHealthLayout');
 
 const TIMEOUT_MS = Number(process.env.HEALTH_CHECK_TIMEOUT_MS) || 5000;
-/** Refresh in background if cache is older than this (ms). Aligns with ~30s UI poll. */
-const STALE_AFTER_MS = Number(process.env.HEALTH_CHECK_STALE_MS) || 25000;
+/** Refresh in background if cache is older than this (ms). Default aligns with ~5s UI poll. */
+const STALE_AFTER_MS = Number(process.env.HEALTH_CHECK_STALE_MS) || 4500;
 
 let cached = { items: null, checkedAt: null };
 let refreshing = false;
