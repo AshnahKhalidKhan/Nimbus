@@ -27,14 +27,14 @@
     {
       "entityId": "cloudopsTasks",
       "name": "CloudOps",
-      "contentUrl": "https://6c1d-103-244-175-114.ngrok-free.app/",
-      "websiteUrl": "https://6c1d-103-244-175-114.ngrok-free.app/",
+      "contentUrl": "https://e884-103-244-175-114.ngrok-free.app/",
+      "websiteUrl": "https://e884-103-244-175-114.ngrok-free.app/",
       "scopes": ["personal", "team"]
     }
   ],
-  "validDomains": ["6c1d-103-244-175-114.ngrok-free.app"],
+  "validDomains": ["e884-103-244-175-114.ngrok-free.app"],
   "webApplicationInfo": {
     "id": "9abcda82-2fc0-424c-b6b3-d493c5677685",
-    "resource": "api://6c1d-103-244-175-114.ngrok-free.app/9abcda82-2fc0-424c-b6b3-d493c5677685"
+    "resource": "api://e884-103-244-175-114.ngrok-free.app/9abcda82-2fc0-424c-b6b3-d493c5677685"
   }
 }

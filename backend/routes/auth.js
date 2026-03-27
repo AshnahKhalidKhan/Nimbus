@@ -2,13 +2,14 @@
  * Auth routes: login redirect and OAuth callback.
  * Token is stored in server session; no token is sent to the client.
  *
- * REDIRECT_URI: Must match the value in .env and in App registration →
- *   Authentication → Web → Redirect URIs (e.g. http://localhost:3000/auth/callback).
+ * OAuth redirect URI is `${getPublicBaseUrl(req)}/auth/callback` (see utils/publicBaseUrl.js).
+ * Register that full URL in App registration → Authentication → Web → Redirect URIs for each public host (e.g. each ngrok URL).
  */
 
 const express = require('express');
 const router = express.Router();
 const { getAuthCodeUrl, acquireTokenByCode, acquireTokenOnBehalfOf } = require('../utils/auth');
+const { getPublicBaseUrl } = require('../utils/publicBaseUrl');
 
 /** Only same-app paths; blocks open redirects like //evil.com */
 function safeReturnTo(raw) {
@@ -45,13 +46,13 @@ router.post('/teams-sso', async (req, res) => {
   }
 });
 
-// Redirect user to Microsoft sign-in (URL built in utils/auth.js using CLIENT_ID, TENANT_ID, REDIRECT_URI)
+// Redirect user to Microsoft sign-in (redirect URI from getPublicBaseUrl + /auth/callback)
 // ?returnTo=/ — where to send the user after OAuth (default: /). Always set so Teams / bookmarks without query still return to the app.
 router.get('/login', async (req, res) => {
   try {
     const returnTo = safeReturnTo(req.query.returnTo) || '/';
     req.session.oauthReturnTo = returnTo;
-    const redirectUri = req.query.redirect_uri || process.env.REDIRECT_URI;
+    const redirectUri = `${getPublicBaseUrl(req)}/auth/callback`;
     const url = await getAuthCodeUrl(redirectUri);
     res.redirect(url);
   } catch (err) {
@@ -68,7 +69,7 @@ router.get('/callback', async (req, res) => {
       return res.status(400).send('Missing authorization code. Please try signing in again.');
     }
 
-    const redirectUri = req.query.redirect_uri || process.env.REDIRECT_URI;
+    const redirectUri = `${getPublicBaseUrl(req)}/auth/callback`;
     const tokenResult = await acquireTokenByCode(code, redirectUri);
 
     req.session.accessToken = tokenResult.accessToken;

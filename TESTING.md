@@ -1,6 +1,6 @@
 # How to verify Nimbus is working
 
-Follow these checks in order. Replace `YOUR_NGROK_HOST` with your real ngrok hostname (e.g. `6c1d-103-244-175-114.ngrok-free.app`) and use **HTTPS** for anything you configured for Teams.
+Follow these checks in order. Replace `YOUR_NGROK_HOST` with your real ngrok hostname (e.g. `e884-103-244-175-114.ngrok-free.app`) and use **HTTPS** for anything you configured for Teams.
 
 ---
 
